@@ -14,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import cu.edu.unah.demo.model.*;
 @Repository
-public interface TokenInvalidoRepository extends JpaRepository<TokenInvalido,Long>{
+public interface TokenInvalidoRepository extends JpaRepository<Tokeninvalido,Integer>{
 }

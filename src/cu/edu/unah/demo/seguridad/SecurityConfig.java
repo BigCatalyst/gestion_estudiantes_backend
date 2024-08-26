@@ -6,6 +6,7 @@
 package cu.edu.unah.demo.seguridad;
 
  
+import cu.edu.unah.demo.services.TokenInvalidoServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,16 +22,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
     private  UserDetailsService userDetailsService;
+    
+    @Autowired
+    private TokenInvalidoServices tokenInvalidoServices;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        JwtUtil jwtUtil=new JwtUtil();
+        jwtUtil.setTokenInvalidoServices(tokenInvalidoServices);
         http
             .csrf().disable()
             .authorizeRequests()
                 .antMatchers("/auth/**").permitAll() // Permitir acceso a la ruta de autenticación
                 .anyRequest().authenticated() // Requiere autenticación para cualquier otra ruta
             .and()
-                .addFilterBefore(new JwtRequestFilter(new JwtUtil(),userDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtRequestFilter(jwtUtil,userDetailsService), UsernamePasswordAuthenticationFilter.class);
 //            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Usar estado sin sesión
     }
 }

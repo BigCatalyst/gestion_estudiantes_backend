@@ -13,12 +13,26 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.springframework.security.core.userdetails.UserDetailsService;
+import cu.edu.unah.demo.services.TokenInvalidoServices;
 @Component
 public class JwtUtil {
 
     private String SECRET_KEY = "mi_clave_secreta"; // Cambia esto a una clave más segura
+    
+    private TokenInvalidoServices tokenInvalidoServices;
 
+    public TokenInvalidoServices getTokenInvalidoServices() {
+        return tokenInvalidoServices;
+    }
+
+    public void setTokenInvalidoServices(TokenInvalidoServices tokenInvalidoServices) {
+        this.tokenInvalidoServices = tokenInvalidoServices;
+    }
+    
+    
+    
+    
     public String generarToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return crearToken(claims, username);
@@ -36,7 +50,11 @@ public class JwtUtil {
 
     public Boolean validarToken(String token, String username) {
         final String usernameExtraido = extraerUsername(token);
-        return (usernameExtraido.equals(username) && !esTokenExpirado(token));
+        boolean esValido=(usernameExtraido.equals(username) && !esTokenExpirado(token));
+        if(esValido&&tokenInvalidoServices!=null){
+            esValido=!tokenInvalidoServices.existTokeninvalido(token);
+        }
+        return esValido;
     }
 
     public String extraerUsername(String token) {

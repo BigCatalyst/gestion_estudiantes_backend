@@ -5,9 +5,13 @@
  */
 package cu.edu.unah.demo.seguridad;
 
-import cu.edu.unah.demo.serializadores.AutenticationRequestBody;
+import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.serializadores.*;
+import cu.edu.unah.demo.services.TokenInvalidoServices;
+import io.jsonwebtoken.SignatureException;
 import java.io.Serializable;
 import java.util.HashMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final JwtUtil jwtUtil;
+    
+    @Autowired
+    private TokenInvalidoServices tokenInvalidoServices;
 
     public AuthController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -38,6 +45,42 @@ public class AuthController {
         System.out.println("va a dar respuesta");
         // Si las credenciales son válidas
         return new ResponseEntity<>(reponse,HttpStatus.OK);
+    }
+    
+    @PostMapping("/logout")
+    public ResponseEntity logout(@RequestBody LogoutRequestBody logoutRequestBody){//(@RequestParam String username, @RequestParam String password) {
+        // Aquí deberías validar las credenciales del usuario (ej. consultando a la base de datos)
+        String token=logoutRequestBody.getToken();
+        String username = null;
+        
+        JwtUtil jwtUtil=new JwtUtil();
+        jwtUtil.setTokenInvalidoServices(tokenInvalidoServices);
+        HashMap<String,String> reponse=new HashMap<>();
+        
+        try{
+            username = jwtUtil.extraerUsername(token);
+        }catch(SignatureException ex){
+            System.out.println("token incorrecto");
+            reponse.put("error", "token incorrecto");
+            return new ResponseEntity<>(reponse,HttpStatus.BAD_REQUEST);
+        }
+        
+        if(tokenInvalidoServices.existTokeninvalido(token)){
+            System.out.println("bad request Token invalido existe");
+            reponse.put("error", "Token invalidado");
+            return new ResponseEntity<>(reponse,HttpStatus.BAD_REQUEST);
+        }
+        
+        if(!jwtUtil.validarToken(token, username)){
+            System.out.println("bad request Token invalido ");
+            reponse.put("error", "Token invalido ");
+            return new ResponseEntity<>(reponse,HttpStatus.BAD_REQUEST);
+        }
+        Tokeninvalido tokenInvalido=new Tokeninvalido();
+        tokenInvalido.setToken(token);
+        tokenInvalidoServices.save(tokenInvalido);
+        
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

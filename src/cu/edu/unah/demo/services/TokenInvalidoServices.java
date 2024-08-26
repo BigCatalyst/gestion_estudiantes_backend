@@ -17,30 +17,30 @@ public class TokenInvalidoServices {
     @Autowired
     TokenInvalidoRepository tokenInvalidoRepository;
     
-    public List<TokenInvalido> findAll() {
+    public List<Tokeninvalido> findAll() {
 		return tokenInvalidoRepository.findAll();
 	}
-        public TokenInvalido findByToken(String token) {
-            for (TokenInvalido tokenInvalido : findAll()) {
-                if(tokenInvalido.getToken().equals(findAll())){
+        public Tokeninvalido findByToken(String token) {
+            for (Tokeninvalido tokenInvalido : findAll()) {
+                if(tokenInvalido.getToken().equals(token)){
                     return tokenInvalido;
                 }
             }
 		return null;
 	}
-        public boolean existTokenInvalido(String token){
+        public boolean existTokeninvalido(String token){
             return findByToken(token)!=null;
         }
-	public TokenInvalido findById(Long id) {
+	public Tokeninvalido findById(Integer id) {
 		return tokenInvalidoRepository.findById(id).get();
 	}
-	public TokenInvalido save(TokenInvalido tokenInvalido) {
+	public Tokeninvalido save(Tokeninvalido tokenInvalido) {
 		if (tokenInvalido.getId()!=null&&tokenInvalidoRepository.existsById(tokenInvalido.getId())) {
 			throw new EntityExistsException("There is already existing entity with such ID in the database.");
 		}
 		return tokenInvalidoRepository.save(tokenInvalido);
 	}
-        public void delete(Long id) {
+        public void delete(Integer id) {
 		tokenInvalidoRepository.deleteById(id);
 	}
 }
