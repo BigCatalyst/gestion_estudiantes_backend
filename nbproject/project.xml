@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.java.j2seproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
-            <name>API_Capasitacion_JAVA_8</name>
+            <name>API_NotasEstudiante_JAVA_8</name>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
