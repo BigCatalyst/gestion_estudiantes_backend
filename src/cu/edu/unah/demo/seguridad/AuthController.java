@@ -15,15 +15,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.apache.commons.codec.digest.DigestUtils;
+import cu.edu.unah.demo.seguridad.CustomUserDetailService;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
+    
     private final JwtUtil jwtUtil;
     
     @Autowired
     private TokenInvalidoServices tokenInvalidoServices;
+    
+    @Autowired
+    private  CustomUserDetailService userDetailsService;
 
     public AuthController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -33,8 +37,15 @@ public class AuthController {
     public ResponseEntity login(@RequestBody AutenticationRequestBody autentication){//(@RequestParam String username, @RequestParam String password) {
         // Aquí deberías validar las credenciales del usuario (ej. consultando a la base de datos)
         String username=autentication.getUsername();
+        String password=autentication.getPassword();
+        if(username==null || password==null){
+            System.out.println("username:"+username);
+            System.out.println("bad request: username null");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         
-        if(username==null || !username.equals("admin")){
+        Usuario usuario=userDetailsService.findByUsername(username);
+        if(usuario==null || !usuario.getPassword().equals(DigestUtils.shaHex(password))){
             System.out.println("username:"+username);
             System.out.println("bad request");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cu.edu.unah.demo.services;
+package cu.edu.unah.demo.seguridad;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +13,9 @@ import org.springframework.stereotype.Service;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
 import cu.edu.unah.demo.seguridad.*;
+
 @Service
-public class UsuarioService implements UserDetailsService {
+public class CustomUserDetailService implements UserDetailsService {
     
     @Autowired
     private UsuarioRepository usuarioRepository; // Supón que ya tienes este repositorio
