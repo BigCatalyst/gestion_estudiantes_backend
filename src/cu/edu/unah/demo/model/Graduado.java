@@ -76,8 +76,8 @@ public class Graduado implements Serializable {
     private Double notaescalafon;
     @Column(name = "noescalafon")
     private Integer noescalafon;
-    @OneToMany(mappedBy = "idgraduado")
-    private Collection<Notagraduado> notagraduadoCollection;
+//    @OneToMany(mappedBy = "idgraduado")
+//    private Collection<Notagraduado> notagraduadoCollection;
 
     public Graduado() {
     }
@@ -181,14 +181,14 @@ public class Graduado implements Serializable {
         this.noescalafon = noescalafon;
     }
 
-    @XmlTransient
-    public Collection<Notagraduado> getNotagraduadoCollection() {
-        return notagraduadoCollection;
-    }
-
-    public void setNotagraduadoCollection(Collection<Notagraduado> notagraduadoCollection) {
-        this.notagraduadoCollection = notagraduadoCollection;
-    }
+//    @XmlTransient
+//    public Collection<Notagraduado> getNotagraduadoCollection() {
+//        return notagraduadoCollection;
+//    }
+//
+//    public void setNotagraduadoCollection(Collection<Notagraduado> notagraduadoCollection) {
+//        this.notagraduadoCollection = notagraduadoCollection;
+//    }
 
     @Override
     public int hashCode() {
