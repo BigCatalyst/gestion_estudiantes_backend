@@ -9,6 +9,8 @@
     <class>cu.edu.unah.demo.model.Careers</class>
     <class>cu.edu.unah.demo.model.Notes</class>
     <class>cu.edu.unah.demo.model.Tokeninvalido</class>
+    <class>cu.edu.unah.demo.model.Notagraduado</class>
+    <class>cu.edu.unah.demo.model.Graduado</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/EscalafonWeb"/>
       <property name="javax.persistence.jdbc.user" value="postgres"/>
