@@ -18,49 +18,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.services.*;
-@RequestMapping("/Careers")
+@RequestMapping("/Notagraduado")
 @RestController
-public class CareersController {
+public class NotagraduadoController {
 	@Autowired
-	private CareersServices careersservices;
+	private NotagraduadoServices notagraduadoservices;
 	@GetMapping(path = { "/findAll" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<Careers>> findAll() {
+	public ResponseEntity<List<Notagraduado>> findAll() {
 		try {
-			return new ResponseEntity<List<Careers>>(careersservices.findAll(), HttpStatus.OK);
+			return new ResponseEntity<List<Notagraduado>>(notagraduadoservices.findAll(), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 	@GetMapping(path = { "/find/{id}" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Careers> findById(@PathVariable Integer id) {
+	public ResponseEntity<Notagraduado> findById(@PathVariable Integer id) {
 		try {
-			return new ResponseEntity<Careers>(careersservices.findById(id), HttpStatus.OK);
+			return new ResponseEntity<Notagraduado>(notagraduadoservices.findById(id), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 	@PostMapping(path = { "/create" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Careers> createCareers(
-			@RequestBody Careers careers) throws URISyntaxException {
-		Careers result = careersservices.save(careers);
-                return new ResponseEntity<>(result, HttpStatus.CREATED);
-		//return ResponseEntity.created(new URI("/Careers/create/" + result.getId())).body(result);
+	public ResponseEntity<Notagraduado> createNotagraduado(
+			@RequestBody Notagraduado notagraduado) throws URISyntaxException {
+		Notagraduado result = notagraduadoservices.save(notagraduado);
+		return new ResponseEntity<>(result, HttpStatus.CREATED);
 	}
 	@PutMapping(path = { "/update" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Careers> update(@RequestBody Careers careers) throws URISyntaxException {
-		if (careers.getId()==null) {
-			return new ResponseEntity<Careers>(HttpStatus.NOT_FOUND);
+	public ResponseEntity<Notagraduado> update(@RequestBody Notagraduado notagraduado) throws URISyntaxException {
+		if (notagraduado.getId()==null) {
+			return new ResponseEntity<Notagraduado>(HttpStatus.NOT_FOUND);
 		}
 		try {
-			Careers result = careersservices.update(careers);
-			return new ResponseEntity<>(result, HttpStatus.OK);
+			Notagraduado result = notagraduadoservices.update(notagraduado);
+                        return new ResponseEntity<>(result, HttpStatus.OK);
+			//return ResponseEntity.created(new URI("/Notagraduado/updated/" + result.getId())).body(result);
 		} catch (EntityNotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 	@DeleteMapping(path = { "/delete/{id}" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
-		careersservices.delete(id);
+		notagraduadoservices.delete(id);
 		return ResponseEntity.ok().build();
 	}
 }

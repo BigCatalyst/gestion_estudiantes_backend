@@ -27,12 +27,12 @@ public class NotesController {
 	@GetMapping(path = { "/findAll" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<Notes>> findAll() {
 		try {
-                        System.out.println("entro");
+//                        System.out.println("entro");
                         List<Notes> notas=notesservices.findAll();
-                        System.out.println("tiene la lista");
-                        for (int i = 0; i < notas.size(); i++) {
-                            System.out.println(notas.get(i).getStudents().getCi());
-                    }
+//                        System.out.println("tiene la lista");
+//                        for (int i = 0; i < notas.size(); i++) {
+//                            System.out.println(notas.get(i).getStudents().getCi());
+//                    }
                         
 			return new ResponseEntity<>(notas, HttpStatus.OK);
 		} catch (Exception e) {

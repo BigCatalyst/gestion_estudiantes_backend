@@ -43,7 +43,7 @@ public class StudentsController {
 	public ResponseEntity<Students> createStudents(
 			@RequestBody Students students) throws URISyntaxException {
 		Students result = studentsservices.save(students);
-		return ResponseEntity.created(new URI("/Students/create/" + result.getCi())).body(result);
+		return new ResponseEntity<>(result, HttpStatus.CREATED);
 	}
 	@PutMapping(path = { "/update" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Students> update(@RequestBody Students students) throws URISyntaxException {
@@ -52,7 +52,7 @@ public class StudentsController {
 		}
 		try {
 			Students result = studentsservices.update(students);
-			return ResponseEntity.created(new URI("/Students/updated/" + result.getCi())).body(result);
+			return new ResponseEntity<>(result, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

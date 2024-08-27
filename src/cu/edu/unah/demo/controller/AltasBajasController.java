@@ -43,7 +43,8 @@ public class AltasBajasController {
 	public ResponseEntity<AltasBajas> createAltasBajas(
 			@RequestBody AltasBajas altasbajas) throws URISyntaxException {
 		AltasBajas result = altasbajasservices.save(altasbajas);
-		return ResponseEntity.created(new URI("/AltasBajas/create/" + result.getCi())).body(result);
+                return new ResponseEntity<AltasBajas>(result, HttpStatus.CREATED);
+		//return ResponseEntity.created(new URI("/AltasBajas/create/" + result.getCi())).body(result);
 	}
 	@PutMapping(path = { "/update" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<AltasBajas> update(@RequestBody AltasBajas altasbajas) throws URISyntaxException {
@@ -52,7 +53,8 @@ public class AltasBajasController {
 		}
 		try {
 			AltasBajas result = altasbajasservices.update(altasbajas);
-			return ResponseEntity.created(new URI("/AltasBajas/updated/" + result.getCi())).body(result);
+			//return ResponseEntity.created(new URI("/AltasBajas/updated/" + result.getCi())).body(result);
+                        return new ResponseEntity<AltasBajas>(result, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
