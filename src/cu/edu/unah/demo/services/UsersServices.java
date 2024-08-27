@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cu.edu.unah.demo.model.Users;
+import org.apache.commons.codec.digest.DigestUtils;
 
 @Service
 public class UsersServices {
@@ -40,6 +41,7 @@ public class UsersServices {
 		if (users.getUsername()!=null && usersRepository.existsById(users.getUsername())) {
 			throw new EntityExistsException("There is already existing entity with such ID in the database.");
 		}
+                users.setPassword(DigestUtils.shaHex(users.getPassword()));
 
 		return usersRepository.save(users);
 	}
@@ -49,6 +51,15 @@ public class UsersServices {
 			throw new EntityNotFoundException("There is no entity with such ID in the database.");
 		}
 
+		return usersRepository.save(users);
+	}
+        
+        public Users updatePassword(String username,String password) {
+                Users users=findById(username);
+		if (users==null) {
+			throw new EntityNotFoundException("There is no entity with such ID in the database.");
+		}
+                users.setPassword(DigestUtils.shaHex(password));
 		return usersRepository.save(users);
 	}
 

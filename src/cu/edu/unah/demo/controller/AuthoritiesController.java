@@ -26,64 +26,66 @@ import cu.edu.unah.demo.services.AuthoritiesServices;
 @RequestMapping("/Authorities")
 @RestController
 public class AuthoritiesController {
-	@Autowired
-	private AuthoritiesServices authoritiesServices;
 
-	@GetMapping(path = { "/findAll" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<Authorities>> findAll() {
-		try {
-			return new ResponseEntity<List<Authorities>>(authoritiesServices.findAll(), HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
+    @Autowired
+    private AuthoritiesServices authoritiesServices;
 
-	@GetMapping(path = { "/find" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Authorities> findById(@RequestBody AuthoritiesPK id) {
-		try {
-			return new ResponseEntity<Authorities>(authoritiesServices.findById(id), HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-	
-	@GetMapping(path = { "/findByUsername/{username}" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<Authorities>> findById(@PathVariable String username) {
-		try {
-                    //System.out.println("aqui");
-			return new ResponseEntity<List<Authorities>>(authoritiesServices.findByUsername(username), HttpStatus.OK);
-		} catch (Exception e) {
-                    e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-		}
-	}
+    @GetMapping(path = {"/findAll"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<Authorities>> findAll() {
+        try {
+            return new ResponseEntity<List<Authorities>>(authoritiesServices.findAll(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-	@PostMapping(path = { "/create" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Authorities> createAuthorities(
-			@RequestBody Authorities authorities) throws URISyntaxException {
-		Authorities result = authoritiesServices.save(authorities);
-		return ResponseEntity.created(new URI("/Authorities/create/" + result.getAuthoritiesPK().getAuthority())).body(result);
-		//return ResponseEntity.created(new URI("/Authorities/create/" + result.getAuthoritiesPK())).body(result);
-	}
+    @GetMapping(path = {"/find"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Authorities> findById(@RequestBody AuthoritiesPK id) {
+        try {
+            return new ResponseEntity<Authorities>(authoritiesServices.findById(id), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-	@PutMapping(path = { "/update" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Authorities> updateCarrera(@RequestBody Authorities authorities) throws URISyntaxException {
-		if (authorities.getAuthoritiesPK()==null) {
-			return new ResponseEntity<Authorities>(HttpStatus.NOT_FOUND);
-		}
-		try {
-			Authorities result = authoritiesServices.update(authorities);
-			//return ResponseEntity.created(new URI("/Authorities/updated/" + result.getAuthoritiesPK())).body(result);
-			return ResponseEntity.created(new URI("/Authorities/updated/" + result.getAuthoritiesPK().getAuthority())).body(result);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
+    @GetMapping(path = {"/findByUsername/{username}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<Authorities>> findById(@PathVariable String username) {
+        try {
+            //System.out.println("aqui");
+            return new ResponseEntity<List<Authorities>>(authoritiesServices.findByUsername(username), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 
-	@PostMapping(path = { "/delete" }, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Void> delete(@RequestBody AuthoritiesPK id) {
-		authoritiesServices.delete(id);
-		return ResponseEntity.ok().build();
-	}
+    @PostMapping(path = {"/create"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> createAuthorities(
+            @RequestBody Authorities authorities) throws URISyntaxException {
+        Authorities result = authoritiesServices.save(authorities);
+        String resultStr = result.getAuthoritiesPK().getAuthority();
+        return new ResponseEntity<String>(resultStr, HttpStatus.CREATED);
+
+    }
+
+    @PutMapping(path = {"/update"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> updateCarrera(@RequestBody Authorities authorities) throws URISyntaxException {
+        if (authorities.getAuthoritiesPK() == null) {
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
+        try {
+            Authorities result = authoritiesServices.update(authorities);
+            String resultStr = result.getAuthoritiesPK().getAuthority();
+            return new ResponseEntity<String>(resultStr, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(path = {"/delete"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Void> delete(@RequestBody AuthoritiesPK id) {
+        authoritiesServices.delete(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

@@ -26,14 +26,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    
+
 //    @Autowired
-    private final  UserDetailsService userDetailsService;
-    
+    private final UserDetailsService userDetailsService;
+
 //    public JwtRequestFilter(JwtUtil jwtUtil) {
 //        this.jwtUtil = jwtUtil;
 //    }
-    public JwtRequestFilter(JwtUtil jwtUtil,UserDetailsService userDetailsService) {
+    public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
@@ -48,39 +48,38 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            try{
+            try {
                 username = jwtUtil.extraerUsername(jwt);
-            }catch(SignatureException ex){
+            } catch (SignatureException ex) {
+                System.out.println("token incorrecto");
+            } catch (MalformedJwtException ex) {
                 System.out.println("token incorrecto");
             }
-            catch(MalformedJwtException ex){
-                System.out.println("token incorrecto");
-            }
-            
+
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            try{
+            try {
                 // Aquí debes cargar el usuario desde la base de datos y establecer la autenticación
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username); 
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 // Si el token es válido
-                if (userDetails.isEnabled()&&jwtUtil.validarToken(jwt, username)) {
+                if (userDetails.isEnabled() && jwtUtil.validarToken(jwt, username)) {
                     // Configura la autenticación aquí
                     System.out.println("paso por login");
-                     UsernamePasswordAuthenticationToken authenticationToken =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authenticationToken
+                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                        // Establecer la autenticación en el contexto de seguridad
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                      System.out.println("termino de autenticar");
+                    // Establecer la autenticación en el contexto de seguridad
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    System.out.println("termino de autenticar");
                 }
-            }catch(UsernameNotFoundException ex){
+            } catch (UsernameNotFoundException ex) {
                 System.out.println("usuario no encontrado");
             }
-            
+
         }
         chain.doFilter(request, response);
     }
