@@ -5,6 +5,7 @@
  */
 package cu.edu.unah.demo.seguridad;
 
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -52,6 +53,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }catch(SignatureException ex){
                 System.out.println("token incorrecto");
             }
+            catch(MalformedJwtException ex){
+                System.out.println("token incorrecto");
+            }
             
         }
 
@@ -61,7 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username); 
 
                 // Si el token es válido
-                if (jwtUtil.validarToken(jwt, username)) {
+                if (userDetails.isEnabled()&&jwtUtil.validarToken(jwt, username)) {
                     // Configura la autenticación aquí
                     System.out.println("paso por login");
                      UsernamePasswordAuthenticationToken authenticationToken =

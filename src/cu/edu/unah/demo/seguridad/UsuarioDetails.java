@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Set;
 import cu.edu.unah.demo.model.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 public class UsuarioDetails implements UserDetails {
@@ -18,12 +19,14 @@ public class UsuarioDetails implements UserDetails {
     private String username;
     private String password;
     private Set<? extends GrantedAuthority> authorities;
+    private boolean enabled;
 
-    public UsuarioDetails(Usuario usuario) {
+    public UsuarioDetails(Users usuario,List<String> roles) {
+        this.enabled=usuario.getEnabled();
         this.username = usuario.getUsername();
         this.password = usuario.getPassword();
-        this.authorities = usuario.getRoles().stream()
-                                   .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+        this.authorities = roles.stream()
+                                   .map(rol -> new SimpleGrantedAuthority(rol))
                                    .collect(Collectors.toSet());
     }
 
@@ -59,6 +62,6 @@ public class UsuarioDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true; // Implementar lógica según tu caso
+        return this.enabled; // Implementar lógica según tu caso
     }
 }

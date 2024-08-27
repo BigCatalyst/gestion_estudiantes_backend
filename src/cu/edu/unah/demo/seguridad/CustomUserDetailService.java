@@ -13,15 +13,21 @@ import org.springframework.stereotype.Service;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
 import cu.edu.unah.demo.seguridad.*;
+import cu.edu.unah.demo.services.AuthoritiesServices;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
     
     @Autowired
-    private UsuarioRepository usuarioRepository; // Supón que ya tienes este repositorio
+    private UsersRepository usuarioRepository; 
     
-    public Usuario findByUsername(String username){
-        for(Usuario usuario: usuarioRepository.findAll()){
+    @Autowired
+    private AuthoritiesServices authoritiesServices;
+    
+    public Users findByUsername(String username){
+        for(Users usuario: usuarioRepository.findAll()){
             if(usuario.getUsername().equals(username)){
                 return usuario;
             }
@@ -31,11 +37,16 @@ public class CustomUserDetailService implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = findByUsername(username);
+        Users usuario = findByUsername(username);
         if(usuario==null){
             throw new UsernameNotFoundException("Usuario no encontrado");
         }
-              
-        return new UsuarioDetails(usuario);
+        List<Authorities> authoritieses=authoritiesServices.findByUsername(username);
+        
+        ArrayList<String> roles=new ArrayList<String>();
+        for (Authorities authoritiese : authoritieses) {
+            roles.add(authoritiese.getAuthoritiesPK().getAuthority());
+        }
+        return new UsuarioDetails(usuario,roles);
     }
 }

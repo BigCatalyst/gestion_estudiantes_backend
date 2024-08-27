@@ -44,10 +44,19 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         
-        Usuario usuario=userDetailsService.findByUsername(username);
-        if(usuario==null || !usuario.getPassword().equals(DigestUtils.shaHex(password))){
+        Users usuario=userDetailsService.findByUsername(username);
+        System.out.println(usuario);
+        if(usuario==null){
             System.out.println("username:"+username);
             System.out.println("bad request");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if(!usuario.getPassword().equals(DigestUtils.shaHex(password))){
+            System.out.println("username:"+username);
+            System.out.println("contraseña incorrecta");
+            System.out.println(usuario.getPassword());
+            System.out.println(password);
+            System.out.println(DigestUtils.shaHex(password));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         System.out.println("no fue bad");
