@@ -5,6 +5,8 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,12 @@ public class NotesServices {
 
     @Autowired
     private NotesRepository notesrepository;
+    
+    @Autowired
+    private StudentsServices studentsservices;
+    
+    @Autowired
+    private SubjectsServices subjectsservices;
 
     public List<Notes> findAll() {
         return notesrepository.findAll();
@@ -53,5 +61,30 @@ public class NotesServices {
             throw new EntityExistsException("There is no entity with such ID in the database.");
         }
         notesrepository.delete(note);
+    }
+    
+    public List<HashMap<String,String>> getNotasConEstudiante(){
+        ArrayList<HashMap<String,String>> response=new ArrayList<>();
+        for (Notes note : findAll()) {
+            HashMap<String,String> data_nota=new HashMap<>();
+            NotesPK notepk = note.getNotesPK();
+            String ci=notepk.getStudentCi();
+            Integer idAsignatura=notepk.getSubjectId();
+            Students estudiante=studentsservices.findById(ci);
+            Subjects asignatura=subjectsservices.findById(idAsignatura);
+            data_nota.put("ci", ci);
+            data_nota.put("nombre", estudiante.getName());
+            data_nota.put("apellidos", estudiante.getLastName());
+            data_nota.put("asignatura", asignatura.getName());
+            data_nota.put("id_asignatura",idAsignatura+"");
+            data_nota.put("grado", asignatura.getGrade()+"");
+            data_nota.put("as", note.getAcs()+"");
+            data_nota.put("tcp1", note.getTcp1()+"");
+            data_nota.put("tcp2", note.getTcp2()+"");
+            data_nota.put("exmane_final", note.getFinalExam()+"");
+            data_nota.put("nota_final", note.getFinalNote()+"");
+            response.add(data_nota);
+        }
+        return response;
     }
 }
