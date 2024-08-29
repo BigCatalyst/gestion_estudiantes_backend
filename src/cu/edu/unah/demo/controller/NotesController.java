@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.services.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import javax.persistence.EntityExistsException;
 
 @RequestMapping("/Notes")
 @RestController
@@ -52,11 +54,30 @@ public class NotesController {
         }
     }
 
+    @GetMapping(path = {"/find/{studentCi}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<Notes>> findById(@PathVariable String studentCi) {
+        try {
+            return new ResponseEntity<List<Notes>>(notesservices.findAll(studentCi), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping(path = {"/create"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Notes> createNotes(
+    public ResponseEntity createNotes(
             @RequestBody Notes notes) throws URISyntaxException {
-        Notes result = notesservices.save(notes);
-        return new ResponseEntity<Notes>(result, HttpStatus.CREATED);
+        try {
+            Notes result = notesservices.save(notes);
+            ResponseEntity response=new ResponseEntity<Notes>(result, HttpStatus.CREATED);
+            return response;
+        } catch (EntityExistsException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping(path = {"/update"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
