@@ -40,7 +40,7 @@ public class NotesController {
 //                    }
 
             return new ResponseEntity<>(notas, HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -49,7 +49,7 @@ public class NotesController {
     public ResponseEntity<Notes> findById(@PathVariable String studentCi, @PathVariable Integer subjectId) {
         try {
             return new ResponseEntity<Notes>(notesservices.findById(studentCi, subjectId), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -58,7 +58,7 @@ public class NotesController {
     public ResponseEntity<List<Notes>> findById(@PathVariable String studentCi) {
         try {
             return new ResponseEntity<List<Notes>>(notesservices.findAll(studentCi), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -70,7 +70,7 @@ public class NotesController {
             Notes result = notesservices.save(notes);
             ResponseEntity response=new ResponseEntity<Notes>(result, HttpStatus.CREATED);
             return response;
-        } catch (EntityExistsException e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -89,7 +89,7 @@ public class NotesController {
             Notes result = notesservices.update(notes);
             return new ResponseEntity<Notes>(result, HttpStatus.OK);
             //return ResponseEntity.created(new URI("/Notes/updated/" + result.getId())).body(result);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -104,7 +104,7 @@ public class NotesController {
     public ResponseEntity findAllNotasConEstudiante() {
         try {
             return new ResponseEntity<>(notesservices.getNotasConEstudiante(), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

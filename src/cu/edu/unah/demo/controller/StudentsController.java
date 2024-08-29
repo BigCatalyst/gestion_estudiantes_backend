@@ -76,8 +76,14 @@ public class StudentsController {
 
     @DeleteMapping(path = {"/delete/{id}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Void> delete(@PathVariable String id) {
-        studentsservices.delete(id);
-        return ResponseEntity.ok().build();
+        try {
+            studentsservices.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException | EntityExistsException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(path = {"/subirdegrado"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.services.*;
+import java.util.HashMap;
+import javax.persistence.EntityExistsException;
 
 @RequestMapping("/AltasBajas")
 @RestController
@@ -30,7 +32,7 @@ public class AltasBajasController {
     public ResponseEntity<List<AltasBajas>> findAll() {
         try {
             return new ResponseEntity<List<AltasBajas>>(altasbajasservices.findAll(), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -39,7 +41,7 @@ public class AltasBajasController {
     public ResponseEntity<AltasBajas> findById(@PathVariable String id) {
         try {
             return new ResponseEntity<AltasBajas>(altasbajasservices.findById(id), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -47,9 +49,15 @@ public class AltasBajasController {
     @PostMapping(path = {"/create"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AltasBajas> createAltasBajas(
             @RequestBody AltasBajas altasbajas) throws URISyntaxException {
-        AltasBajas result = altasbajasservices.save(altasbajas);
-        return new ResponseEntity<AltasBajas>(result, HttpStatus.CREATED);
-        //return ResponseEntity.created(new URI("/AltasBajas/create/" + result.getCi())).body(result);
+        try {
+            AltasBajas result = altasbajasservices.save(altasbajas);
+            return new ResponseEntity<AltasBajas>(result, HttpStatus.CREATED);
+        } catch (EntityNotFoundException | EntityExistsException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PutMapping(path = {"/update"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -61,14 +69,20 @@ public class AltasBajasController {
             AltasBajas result = altasbajasservices.update(altasbajas);
             //return ResponseEntity.created(new URI("/AltasBajas/updated/" + result.getCi())).body(result);
             return new ResponseEntity<AltasBajas>(result, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping(path = {"/delete/{id}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Void> delete(@PathVariable String id) {
-        altasbajasservices.delete(id);
-        return ResponseEntity.ok().build();
+        try {
+            altasbajasservices.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException | EntityExistsException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        }
     }
 }

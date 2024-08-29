@@ -34,6 +34,9 @@ public class AltasBajasServices {
 		return altasbajasrepository.save(altasbajas);
 	}
 	public void delete(String id) {
+            if(!altasbajasrepository.existsById(id)){
+                throw new EntityExistsException("There is no entity with such ID in the database.");
+            }
 		altasbajasrepository.deleteById(id);
 	}
 }
