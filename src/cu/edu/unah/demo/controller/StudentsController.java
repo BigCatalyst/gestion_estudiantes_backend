@@ -125,4 +125,17 @@ public class StudentsController {
         }
 
     }
+    
+    @GetMapping(path = {"/escalafon"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<UbicacionEscalafonResponse>> escalafon() {
+        try {
+            return new ResponseEntity<List<UbicacionEscalafonResponse>>(studentsservices.obtenerEscalafon(), HttpStatus.OK);
+        } catch (EntityNotFoundException  e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
