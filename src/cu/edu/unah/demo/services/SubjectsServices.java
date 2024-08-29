@@ -62,10 +62,10 @@ public class SubjectsServices {
 
         if (subjects.getId() != null) {
             if (!subjectsrepository.existsById(subjects.getId())) {
-                throw new EntityExistsException("There is no entity with such ID in the database.");
+                throw new EntityNotFoundException("There is no entity with such ID in the database.");
             }
             if (existeOtro(subjects)) {
-                throw new BadRequestException("Ya existe otra asignatura con ese nombre");
+                throw new EntityNotFoundException("Ya existe otra asignatura con ese nombre");
             }
         }
         return subjectsrepository.save(subjects);

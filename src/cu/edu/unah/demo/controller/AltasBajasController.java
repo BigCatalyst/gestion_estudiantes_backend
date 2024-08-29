@@ -1,5 +1,6 @@
 package cu.edu.unah.demo.controller;
 
+import cu.edu.unah.demo.exceptions.BadRequestException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -32,8 +33,12 @@ public class AltasBajasController {
     public ResponseEntity<List<AltasBajas>> findAll() {
         try {
             return new ResponseEntity<List<AltasBajas>>(altasbajasservices.findAll(), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -41,8 +46,12 @@ public class AltasBajasController {
     public ResponseEntity<AltasBajas> findById(@PathVariable String id) {
         try {
             return new ResponseEntity<AltasBajas>(altasbajasservices.findById(id), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -52,7 +61,7 @@ public class AltasBajasController {
         try {
             AltasBajas result = altasbajasservices.save(altasbajas);
             return new ResponseEntity<AltasBajas>(result, HttpStatus.CREATED);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException | EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -69,8 +78,12 @@ public class AltasBajasController {
             AltasBajas result = altasbajasservices.update(altasbajas);
             //return ResponseEntity.created(new URI("/AltasBajas/updated/" + result.getCi())).body(result);
             return new ResponseEntity<AltasBajas>(result, HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -79,10 +92,14 @@ public class AltasBajasController {
         try {
             altasbajasservices.delete(id);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -1,5 +1,6 @@
 package cu.edu.unah.demo.controller;
 
+import cu.edu.unah.demo.exceptions.BadRequestException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -24,6 +25,7 @@ import cu.edu.unah.demo.serializadores.ChangePasswordRequestBody;
 import cu.edu.unah.demo.services.UsersServices;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
+import org.hibernate.id.IdentifierGenerationException;
 
 @RequestMapping("/Users")
 @RestController
@@ -36,8 +38,12 @@ public class UsersController {
     public ResponseEntity<List<Users>> findAll() {
         try {
             return new ResponseEntity<List<Users>>(usersServices.findAll(), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -45,8 +51,12 @@ public class UsersController {
     public ResponseEntity<Users> findById(@PathVariable String id) {
         try {
             return new ResponseEntity<Users>(usersServices.findById(id), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -56,7 +66,11 @@ public class UsersController {
         try {
             Users result = usersServices.save(users);
             return new ResponseEntity<Users>(result, HttpStatus.CREATED);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -71,8 +85,12 @@ public class UsersController {
         try {
             Users result = usersServices.update(users);
             return new ResponseEntity<Users>(result, HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -87,8 +105,12 @@ public class UsersController {
 
             Users result = usersServices.updatePassword(username, password);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -97,8 +119,12 @@ public class UsersController {
         try {
             usersServices.delete(id);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 

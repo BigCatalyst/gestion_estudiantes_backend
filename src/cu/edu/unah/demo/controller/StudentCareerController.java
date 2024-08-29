@@ -1,5 +1,6 @@
 package cu.edu.unah.demo.controller;
 
+import cu.edu.unah.demo.exceptions.BadRequestException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.serializadores.EstudianteCarrerasBodyRequest;
 import cu.edu.unah.demo.services.*;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
+import org.hibernate.id.IdentifierGenerationException;
 
 @RequestMapping("/StudentCareer")
 @RestController
@@ -32,8 +35,25 @@ public class StudentCareerController {
     public ResponseEntity<List<StudentCareer>> findAll() {
         try {
             return new ResponseEntity<List<StudentCareer>>(studentcareerservices.findAll(), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException  e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping(path = {"/findAll/{studentCi}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<StudentCareer>> findAllCi(@PathVariable String studentCi) {
+        try {
+            return new ResponseEntity<List<StudentCareer>>(studentcareerservices.findAll(studentCi), HttpStatus.OK);
+        } catch (EntityNotFoundException  e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -41,8 +61,12 @@ public class StudentCareerController {
     public ResponseEntity<StudentCareer> findById(@PathVariable String studentCi, @PathVariable Integer careerId) {
         try {
             return new ResponseEntity<StudentCareer>(studentcareerservices.findById(studentCi, careerId), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException  e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -52,7 +76,10 @@ public class StudentCareerController {
         try {
             StudentCareer result = studentcareerservices.save(studentcareer);
             return new ResponseEntity<StudentCareer>(result, HttpStatus.CREATED);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException 
+                | EntityExistsException 
+                | IdentifierGenerationException 
+                | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -67,8 +94,12 @@ public class StudentCareerController {
         try {
             StudentCareer result = studentcareerservices.update(studentcareer);
             return new ResponseEntity<StudentCareer>(result, HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException  e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -77,8 +108,30 @@ public class StudentCareerController {
         try {
             studentcareerservices.delete(studentCi, careerId);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity crearBoletan(
+            @RequestBody EstudianteCarrerasBodyRequest body
+    ) {
+        try {
+            String ci = body.getCi();
+            List<Integer> ids_carreras = body.getCarreras();
+            studentcareerservices.crearBoleta(ci, ids_carreras);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 }

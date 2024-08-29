@@ -62,7 +62,7 @@ public class NotesServices {
 
     public Notes update(Notes note) {
         if (!existNote(note)) {
-            throw new EntityExistsException("There is no entity with such ID in the database.");
+            throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         return notesrepository.save(note);
     }
@@ -70,14 +70,14 @@ public class NotesServices {
     public void delete(String studentCi, int subjectId) {
         Notes note = findById(studentCi, subjectId);
         if (note == null) {
-            throw new EntityExistsException("There is no entity with such ID in the database.");
+            throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         notesrepository.delete(note);
     }
 
     public void delete(Notes note) {
         if (note == null) {
-            throw new EntityExistsException("There is no entity with such ID in the database.");
+            throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         notesrepository.delete(note);
     }

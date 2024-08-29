@@ -48,7 +48,7 @@ public class StudentsServices {
 
     public Students update(Students students) {
         if (students.getCi() != null && !studentsrepository.existsById(students.getCi())) {
-            throw new EntityExistsException("There is no entity with such ID in the database.");
+            throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         return studentsrepository.save(students);
     }
@@ -59,7 +59,7 @@ public class StudentsServices {
 
     public void subirDeGrado(String ci, String carrera, String Nodematricula) {
         if (!studentsrepository.existsById(ci)) {
-            throw new EntityExistsException("There is no entity with such ID in the database.");
+            throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         Students estudiante = findById(ci);
         if (estudiante.getGrade() >= 9) {

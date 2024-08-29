@@ -29,13 +29,13 @@ public class AltasBajasServices {
 	}
 	public AltasBajas update(AltasBajas altasbajas) {
 		if (altasbajas.getCi()!=null && !altasbajasrepository.existsById(altasbajas.getCi())) {
-			throw new EntityExistsException("There is no entity with such ID in the database.");
+			throw new EntityNotFoundException("There is no entity with such ID in the database.");
 		}
 		return altasbajasrepository.save(altasbajas);
 	}
 	public void delete(String id) {
             if(!altasbajasrepository.existsById(id)){
-                throw new EntityExistsException("There is no entity with such ID in the database.");
+                throw new EntityNotFoundException("There is no entity with such ID in the database.");
             }
 		altasbajasrepository.deleteById(id);
 	}

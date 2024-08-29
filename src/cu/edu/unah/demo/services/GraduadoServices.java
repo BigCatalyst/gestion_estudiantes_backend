@@ -25,7 +25,7 @@ public class GraduadoServices {
 	}
 	public Graduado update(Graduado graduado) {
 		if (graduado.getId()!=null && !graduadorepository.existsById(graduado.getId())) {
-			throw new EntityExistsException("There is no entity with such ID in the database.");
+			throw new EntityNotFoundException("There is no entity with such ID in the database.");
 		}
 		return graduadorepository.save(graduado);
 	}

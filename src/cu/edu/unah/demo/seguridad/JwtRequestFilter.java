@@ -5,6 +5,7 @@
  */
 package cu.edu.unah.demo.seguridad;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,6 +55,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.out.println("token incorrecto");
             } catch (MalformedJwtException ex) {
                 System.out.println("token incorrecto");
+            } catch (ExpiredJwtException ex){
+                System.out.println("token expirado");
             }
 
         }

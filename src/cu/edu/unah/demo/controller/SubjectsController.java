@@ -21,6 +21,7 @@ import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.services.*;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
+import org.hibernate.id.IdentifierGenerationException;
 
 @RequestMapping("/Subjects")
 @RestController
@@ -33,8 +34,12 @@ public class SubjectsController {
     public ResponseEntity<List<Subjects>> findAll() {
         try {
             return new ResponseEntity<List<Subjects>>(subjectsservices.findAll(), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException  e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -42,8 +47,12 @@ public class SubjectsController {
     public ResponseEntity<Subjects> findById(@PathVariable Integer id) {
         try {
             return new ResponseEntity<Subjects>(subjectsservices.findById(id), HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -68,9 +77,9 @@ public class SubjectsController {
         try {
             Subjects result = subjectsservices.update(subjects);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException  e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (BadRequestException e) {
+        } catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -82,8 +91,12 @@ public class SubjectsController {
         try {
             subjectsservices.delete(id);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | EntityExistsException e) {
+        } catch (EntityNotFoundException  e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 }
