@@ -55,7 +55,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.out.println("token incorrecto");
             } catch (MalformedJwtException ex) {
                 System.out.println("token incorrecto");
-            } catch (ExpiredJwtException ex){
+            } catch (ExpiredJwtException ex) {
                 System.out.println("token expirado");
             }
 

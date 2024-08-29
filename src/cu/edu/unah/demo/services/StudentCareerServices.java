@@ -98,6 +98,14 @@ public class StudentCareerServices {
         }
         studentcareerrepository.delete(studentCareer);
     }
+    
+    public void delete(String studentCi) {
+        List<StudentCareer> studentCareers = findAll(studentCi);
+        for (StudentCareer studentCareer : studentCareers) {
+            studentcareerrepository.delete(studentCareer);
+        }
+        
+    }
 
     public void crearBoleta(String ci, List<Integer> ids_carreras) {
         Students student = studentsservices.findById(ci);

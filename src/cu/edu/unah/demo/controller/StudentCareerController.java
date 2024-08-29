@@ -116,6 +116,20 @@ public class StudentCareerController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @DeleteMapping(path = {"/delete/{studentCi}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Void> delete(@PathVariable String studentCi) {
+        try {
+            studentcareerservices.delete(studentCi);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch ( EntityExistsException |BadRequestException | IdentifierGenerationException  e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity crearBoletan(
