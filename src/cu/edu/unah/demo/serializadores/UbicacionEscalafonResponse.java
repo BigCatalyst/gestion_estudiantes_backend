@@ -13,6 +13,7 @@ import java.io.Serializable;
  * @author Rene
  */
 public class UbicacionEscalafonResponse implements Serializable {
+
     private int lugar;
     private double promedio;
     private Students estudiante;
@@ -49,5 +50,5 @@ public class UbicacionEscalafonResponse implements Serializable {
     public void setEstudiante(Students estudiante) {
         this.estudiante = estudiante;
     }
-    
+
 }

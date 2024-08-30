@@ -148,9 +148,9 @@ public class StudentsServices {
                 if (es_de_noveno) {
                     if (note.getFinalNote() == null) {
                         double prom_asc = note.getAcs(); //en base a 10
-                        double prom_tcp = note.getTcp1(); //en base a 40
+                        double prom_tcp = note.getTcp1() * 0.4; //en base a 40
                         if (note.getTcp2() != null) {
-                            prom_tcp += note.getTcp2();
+                            prom_tcp += note.getTcp2() * 0.4;
                             prom_tcp /= 2;
                         }
                         double acumulado_base_50 = prom_asc + prom_tcp;
@@ -162,9 +162,9 @@ public class StudentsServices {
                     suma_notas += note.getFinalNote();
                 } else {
                     double prom_asc = note.getAcs(); //en base a 10
-                    double prom_tcp = note.getTcp1(); //en base a 40
+                    double prom_tcp = note.getTcp1() * 0.4; //en base a 40
                     if (note.getTcp2() != null) {
-                        prom_tcp += note.getTcp2();
+                        prom_tcp += note.getTcp2() * 0.4;
                         prom_tcp /= 2;
                     }
                     double acumulado_base_50 = prom_asc + prom_tcp;
