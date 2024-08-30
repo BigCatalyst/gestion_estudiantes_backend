@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cu.edu.unah.demo.model.Users;
+import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.serializadores.ChangePasswordRequestBody;
 import cu.edu.unah.demo.services.UsersServices;
 import java.util.HashMap;
@@ -125,6 +126,22 @@ public class UsersController {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte() {
+        try {
+            return ReportesUtiles.generarReporte(usersServices.getDatosUsers());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
