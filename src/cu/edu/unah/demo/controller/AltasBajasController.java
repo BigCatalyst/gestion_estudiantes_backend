@@ -114,11 +114,11 @@ public class AltasBajasController {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @GetMapping(path = {"/reporte/pormes/{year}/{mes}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity reporte(@PathVariable Integer year,@PathVariable Integer mes) {
+    public ResponseEntity reporte(@PathVariable Integer year, @PathVariable Integer mes) {
         try {
-            return ReportesUtiles.generarReporte(altasbajasservices.getDatosAltasBajas(year,mes));
+            return ReportesUtiles.generarReporte(altasbajasservices.getDatosAltasBajas(year, mes));
         } catch (Exception ex) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }

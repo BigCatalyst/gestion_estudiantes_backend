@@ -21,11 +21,11 @@ public class AltasBajasServices {
     public List<AltasBajas> findAll() {
         return altasbajasrepository.findAll();
     }
-    
+
     public List<AltasBajas> findAll(int year, int mount) {
-        List<AltasBajas> lista=new ArrayList<>();
+        List<AltasBajas> lista = new ArrayList<>();
         for (AltasBajas altasBajas : altasbajasrepository.findAll()) {
-            if(altasBajas.getDate().getMonth()==mount&&altasBajas.getDate().getYear()==year){
+            if (altasBajas.getDate().getMonth() == mount && altasBajas.getDate().getYear() == year) {
                 lista.add(altasBajas);
             }
         }
@@ -58,14 +58,15 @@ public class AltasBajasServices {
         }
         altasbajasrepository.deleteById(id);
     }
-    
+
     public String[][] getDatosAltasBajas() {
-        return  getDatosAltasBajas(findAll());
+        return getDatosAltasBajas(findAll());
     }
+
     public String[][] getDatosAltasBajas(int year, int mount) {
-        return  getDatosAltasBajas(findAll(year,mount));
+        return getDatosAltasBajas(findAll(year, mount));
     }
-    
+
     private String[][] getDatosAltasBajas(List<AltasBajas> altasbajas) {
         altasbajas.sort(new Comparator<AltasBajas>() {
             @Override
@@ -73,16 +74,16 @@ public class AltasBajasServices {
                 return o1.getDate().compareTo(o2.getDate());
             }
         });
-        
-        String[] titulos = new String[]{"Ci","Baja", "Fecha", "Municipio", "Provincia", "Escuela"};
+
+        String[] titulos = new String[]{"Ci", "Baja", "Fecha", "Municipio", "Provincia", "Escuela"};
         String[][] datos = new String[altasbajas.size() + 2][titulos.length];
         datos[0] = titulos;
         datos[1] = new String[]{"2", "1", "2", "2", "2", "2"};
         int row = 2;
         for (AltasBajas altabaja : altasbajas) {
             datos[row][0] = altabaja.getCi();
-            datos[row][1] = altabaja.getBaja()?"Baja":"Alta";
-            datos[row][2] = altabaja.getDate().getYear()+"-"+(altabaja.getDate().getMonth()+1)+"-"+altabaja.getDate().getDate();
+            datos[row][1] = altabaja.getBaja() ? "Baja" : "Alta";
+            datos[row][2] = altabaja.getDate().getYear() + "-" + (altabaja.getDate().getMonth() + 1) + "-" + altabaja.getDate().getDate();
             datos[row][3] = altabaja.getMunicipality();
             datos[row][4] = altabaja.getProvince();
             datos[row][5] = altabaja.getSchool();
