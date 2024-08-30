@@ -7,6 +7,7 @@ import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.security.auth.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,5 +106,24 @@ public class NotesServices {
             response.add(data_nota);
         }
         return response;
+    }
+    
+    public String[][] getDatosReporteNotes(){
+        List<Notes> notas=findAll();
+        String[][] datos=new String[notas.size()+1][5];
+        datos[0]=new String[]{"Ci","Asignatura","Grado","AS","TCP1","TCP2","EF","FN"};
+        int row=1;
+        for (Notes nota : notas) {
+            Subjects asignatura=subjectsservices.findById(nota.getNotesPK().getSubjectId());
+            datos[row][0]=studentsservices.findById(nota.getNotesPK().getStudentCi()).getName();
+            datos[row][1]=asignatura.getName();
+            datos[row][2]=asignatura.getGrade()+"";
+            datos[row][3]=nota.getAcs()!=null?nota.getAcs()+"":"";
+            datos[row][4]=nota.getTcp1()!=null?nota.getTcp1()+"":"";
+            datos[row][5]=nota.getTcp2()!=null?nota.getTcp2()+"":"";
+            datos[row][6]=nota.getFinalExam()!=null?nota.getFinalExam()+"":"";
+            datos[row][7]=nota.getFinalNote()!=null?nota.getFinalNote()+"":"";
+        }
+        return datos;
     }
 }

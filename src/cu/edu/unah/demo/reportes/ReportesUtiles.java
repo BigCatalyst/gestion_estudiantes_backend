@@ -5,6 +5,16 @@
  */
 package cu.edu.unah.demo.reportes;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfDocument;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.springframework.http.HttpStatus;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,6 +42,9 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  *
@@ -39,76 +52,65 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  */
 public class ReportesUtiles {
 
-//    public static ByteArrayOutputStream getOutputStreamFromReport(List list, Map map, String filename) throws Exception {
-//        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
-//
-//        URL u = ReportesUtiles.class.getResource("jrxml"
-//                + File.separator + filename + ".jasper");
-//
-//        JasperPrint jp = JasperFillManager.fillReport(u.getFile(), map, dataSource);
-//
-//        JasperExportManager.exportReportToPdfStream(jp, os);
-//        os.flush();
-//        os.close();
-//        return os;
-//    }
+    
+    public static ResponseEntity<byte[]> generarReporte(String data[][]) throws DocumentException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-    public static ByteArrayOutputStream getOutputStreamFromReport(Map map, String filename) throws Exception {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        URL u = ReportesUtiles.class.getResource("jrxml"
-                + File.separator + filename + ".jasper");
-
-        Connection conn = null;
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/tesis", "postgres", "pedro");
-            conn.setAutoCommit(false);
-        } catch (ClassNotFoundException | SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
+        Document document = new Document();
+        PdfWriter.getInstance(document, byteArrayOutputStream);
+        document.open();
         
-        JasperPrint jp = JasperFillManager.fillReport(u.getFile(), map, conn);
+        
+        // Crear la tabla con el número de columnas de la matriz
+            PdfPTable table = new PdfPTable(data[0].length);
+            
+            // Fuente para los títulos
+            Font titleFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+            
+            // Colores para el fondo del título
+            BaseColor bgColor = new BaseColor(200, 200, 200); // Color gris claro
+            
+            // Añadir los encabezados
+            for (String title : data[0]) {
+                PdfPCell cell = new PdfPCell(new Paragraph(title, titleFont));
+                cell.setBackgroundColor(bgColor);
+                cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                table.addCell(cell);
+            }
+            
+            // Estilo para el contenido de la tabla
+            Font contentFont = new Font(Font.FontFamily.HELVETICA, 11);
+            
+            // Añadir el resto de los datos
+            for (int i = 1; i < data.length; i++) {
+                for (String value : data[i]) {
+                    table.addCell(new Paragraph(value, contentFont));
+                }
+            }
 
-        JasperExportManager.exportReportToPdfStream(jp, os);
-        os.flush();
-        os.close();
-        return os;
+        // Agregamos la tabla al documento            
+        document.add(table);
+
+        document.close();
+
+//        // Crear el documento PDF
+//        PdfWriter pdfWriter = new PdfWriter// new PdfWriter(byteArrayOutputStream);
+//        PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+//        Document document = new Document(pdfDocument);
+//
+//        // Agregar contenido al documento
+//        document.add(new Paragraph("¡Hola, Mundo! Este es un PDF generado con iText."));
+        // Cerrar el documento
+        document.close();
+
+        // Obtener los bytes del PDF
+        byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+
+        // Preparar la respuesta
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=document.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
-
-//    public static StreamedContent getStreamContentFromOutputStream(ByteArrayOutputStream os, String contentType, String nameFile) throws Exception {
-//        StreamedContent file = null;
-//        InputStream is = new ByteArrayInputStream(os.toByteArray());
-//        file = new DefaultStreamedContent(is, contentType, nameFile);
-//        return file;
-//    }
-//
-//    public static StreamedContent getStreamContentReport(List list, Map map, String pathJasper, String nameFilePdf) throws Exception {
-//        StreamedContent pdf = null;
-//        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
-//
-//        JasperPrint jp = JasperFillManager.fillReport(pathJasper, map, dataSource);
-//
-//        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//        JasperExportManager.exportReportToPdfStream(jp, os);
-//        os.flush();
-//        os.close();
-//
-//        InputStream is = new ByteArrayInputStream(os.toByteArray());
-//        pdf = new DefaultStreamedContent(is, "application/pdf", nameFilePdf);
-//        return pdf;
-//    }
-//
-//    public void generar(String filename, Map<String, Object> map) {
-//        try {
-//
-//            ByteArrayOutputStream outputStream = getOutputStreamFromReport(map, filename);
-//            StreamedContent media = getStreamContentFromOutputStream(outputStream, "application/pdf", reportName);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }

@@ -7,6 +7,7 @@ package cu.edu.unah.demo.seguridad;
 
 import cu.edu.unah.demo.exceptions.BadRequestException;
 import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.serializadores.*;
 import cu.edu.unah.demo.services.TokenInvalidoServices;
 import io.jsonwebtoken.SignatureException;
@@ -23,7 +24,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.http.MediaType;
 
-@CrossOrigin(origins = "http://localhost:5173")//
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -111,5 +112,14 @@ public class AuthController {
         
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+//    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResponseEntity reporte() {
+//        try {
+//        return ReportesUtiles.generarReporte(null);
+//        }catch(Exception ex){
+//        return new ResponseEntity( HttpStatus.BAD_REQUEST);
+//        }
+//    }
 }
 

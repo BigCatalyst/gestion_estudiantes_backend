@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.services.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class NotesController {
             return new ResponseEntity<>(notas, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -56,7 +57,7 @@ public class NotesController {
             return new ResponseEntity<Notes>(notesservices.findById(studentCi, subjectId), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -69,7 +70,7 @@ public class NotesController {
             return new ResponseEntity<List<Notes>>(notesservices.findAll(studentCi), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -81,7 +82,7 @@ public class NotesController {
             @RequestBody Notes notes) throws URISyntaxException {
         try {
             Notes result = notesservices.save(notes);
-            ResponseEntity response=new ResponseEntity<Notes>(result, HttpStatus.CREATED);
+            ResponseEntity response = new ResponseEntity<Notes>(result, HttpStatus.CREATED);
             return response;
         } catch (EntityNotFoundException | EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
@@ -104,7 +105,7 @@ public class NotesController {
             //return ResponseEntity.created(new URI("/Notes/updated/" + result.getId())).body(result);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -113,12 +114,12 @@ public class NotesController {
 
     @DeleteMapping(path = {"/delete/{studentCi}/{subjectId}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Void> delete(@PathVariable String studentCi, @PathVariable Integer subjectId) {
-        try{
-        notesservices.delete(studentCi, subjectId);
-        return ResponseEntity.ok().build();
+        try {
+            notesservices.delete(studentCi, subjectId);
+            return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -131,10 +132,19 @@ public class NotesController {
             return new ResponseEntity<>(notesservices.getNotasConEstudiante(), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte() {
+        try {
+            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotes());
+        } catch (Exception ex) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
