@@ -52,7 +52,6 @@ import org.springframework.http.ResponseEntity;
  */
 public class ReportesUtiles {
 
-    
     public static ResponseEntity<byte[]> generarReporte(String data[][]) throws DocumentException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -60,33 +59,47 @@ public class ReportesUtiles {
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
         
+        int cantidad_de_columnas=data[0].length;
         
         // Crear la tabla con el número de columnas de la matriz
-            PdfPTable table = new PdfPTable(data[0].length);
-            
-            // Fuente para los títulos
-            Font titleFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
-            
-            // Colores para el fondo del título
-            BaseColor bgColor = new BaseColor(200, 200, 200); // Color gris claro
-            
-            // Añadir los encabezados
-            for (String title : data[0]) {
-                PdfPCell cell = new PdfPCell(new Paragraph(title, titleFont));
-                cell.setBackgroundColor(bgColor);
+        PdfPTable table = new PdfPTable(cantidad_de_columnas);
+
+        float[] columnWidths = new float[cantidad_de_columnas]; // Cambia los tamaños según tus necesidades
+        for (int i = 0; i < data[1].length; i++) {
+            String ancho_str=data[1][i];
+            columnWidths[i]=Float.parseFloat(ancho_str);
+        }
+        
+        
+        table.setWidths(columnWidths);
+
+        // Fuente para los títulos
+        Font titleFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+
+        // Colores para el fondo del título
+        BaseColor bgColor = new BaseColor(200, 200, 200); // Color gris claro
+
+        // Añadir los encabezados
+        for (String title : data[0]) {
+            PdfPCell cell = new PdfPCell(new Paragraph(title, titleFont));
+            cell.setBackgroundColor(bgColor);
+            cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+            table.addCell(cell);
+        }
+
+        // Estilo para el contenido de la tabla
+        Font contentFont = new Font(Font.FontFamily.HELVETICA, 11);
+
+        // Añadir el resto de los datos
+        for (int i = 2; i < data.length; i++) {
+            for (String value : data[i]) {
+                PdfPCell cell = new PdfPCell(new Paragraph(value, contentFont));
                 cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
                 table.addCell(cell);
+                
+//                table.addCell(new Paragraph(value, contentFont));
             }
-            
-            // Estilo para el contenido de la tabla
-            Font contentFont = new Font(Font.FontFamily.HELVETICA, 11);
-            
-            // Añadir el resto de los datos
-            for (int i = 1; i < data.length; i++) {
-                for (String value : data[i]) {
-                    table.addCell(new Paragraph(value, contentFont));
-                }
-            }
+        }
 
         // Agregamos la tabla al documento            
         document.add(table);

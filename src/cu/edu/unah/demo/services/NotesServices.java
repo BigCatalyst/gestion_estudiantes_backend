@@ -111,9 +111,10 @@ public class NotesServices {
     public String[][] getDatosReporteNotes(){
         List<Notes> notas=findAll();
         String []titulos=new String[]{"Ci","Asignatura","Grado","AS","TCP1","TCP2","EF","FN"};
-        String[][] datos=new String[notas.size()+1][titulos.length];
+        String[][] datos=new String[notas.size()+2][titulos.length];
         datos[0]=titulos;
-        int row=1;
+        datos[1]=new String[]{"3","3","1","1","1","1","1","1"};
+        int row=2;
         for (Notes nota : notas) {
             Subjects asignatura=subjectsservices.findById(nota.getNotesPK().getSubjectId());
             datos[row][0]=studentsservices.findById(nota.getNotesPK().getStudentCi()).getName();
@@ -124,6 +125,7 @@ public class NotesServices {
             datos[row][5]=nota.getTcp2()!=null?nota.getTcp2()+"":"";
             datos[row][6]=nota.getFinalExam()!=null?nota.getFinalExam()+"":"";
             datos[row][7]=nota.getFinalNote()!=null?nota.getFinalNote()+"":"";
+            row++;
         }
         return datos;
     }
