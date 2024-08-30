@@ -110,8 +110,9 @@ public class NotesServices {
     
     public String[][] getDatosReporteNotes(){
         List<Notes> notas=findAll();
-        String[][] datos=new String[notas.size()+1][5];
-        datos[0]=new String[]{"Ci","Asignatura","Grado","AS","TCP1","TCP2","EF","FN"};
+        String []titulos=new String[]{"Ci","Asignatura","Grado","AS","TCP1","TCP2","EF","FN"};
+        String[][] datos=new String[notas.size()+1][titulos.length];
+        datos[0]=titulos;
         int row=1;
         for (Notes nota : notas) {
             Subjects asignatura=subjectsservices.findById(nota.getNotesPK().getSubjectId());

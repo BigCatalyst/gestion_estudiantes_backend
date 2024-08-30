@@ -144,6 +144,7 @@ public class NotesController {
         try {
             return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotes());
         } catch (Exception ex) {
+            ex.printStackTrace();
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
