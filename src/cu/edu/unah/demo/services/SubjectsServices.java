@@ -33,7 +33,7 @@ public class SubjectsServices {
     }
 
     public boolean existeOtro(Subjects original) {
-        String nombre=original.getName();
+        String nombre = original.getName();
         Subjects subjects = getSubjects(nombre);
         if (subjects != null && subjects.getId().equals(original.getId())) {
             return false;
@@ -74,4 +74,26 @@ public class SubjectsServices {
     public void delete(Integer id) {
         subjectsrepository.deleteById(id);
     }
+
+    public String[][] getDatosAsignaturas() {
+        return getDatosAsignaturas(findAll());
+    }
+
+    private String[][] getDatosAsignaturas(List<Subjects> asignaturas) {
+        String[] titulos = new String[]{"Nombre", "Grado", "TCP2"};
+        String[][] datos = new String[asignaturas.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"3", "1", "1"};
+        int row = 2;
+        for (Subjects subjects : asignaturas) {
+
+            datos[row][0] = subjects.getName();
+            datos[row][1] = subjects.getGrade() + "";
+            datos[row][2] = subjects.getTcp2() ? "si" : "no";
+
+            row++;
+        }
+        return datos;
+    }
+
 }

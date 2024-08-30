@@ -100,7 +100,7 @@ public class CareersController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity reporte() {
         try {

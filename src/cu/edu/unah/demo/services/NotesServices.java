@@ -184,8 +184,8 @@ public class NotesServices {
     public String[][] getDatosReporteNotesByGrade(int grade, int subjectId) {
         return getDatosReporteNotes(findByGrade(grade, subjectId));
     }
-    
-     public String[][] getDatosReporteNotesByGrade(int grade, String studentCi) {
+
+    public String[][] getDatosReporteNotesByGrade(int grade, String studentCi) {
         return getDatosReporteNotes(findByGrade(grade, studentCi));
     }
 
