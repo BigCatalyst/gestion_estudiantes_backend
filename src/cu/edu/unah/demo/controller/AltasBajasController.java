@@ -21,7 +21,9 @@ import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.services.*;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/AltasBajas")
 @RestController
 public class AltasBajasController {

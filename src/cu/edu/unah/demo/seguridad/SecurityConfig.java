@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         jwtUtil.setTokenInvalidoServices(tokenInvalidoServices);
         
         
-        http
+        http.cors().and()
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll() // Permitir acceso a la ruta de autenticación

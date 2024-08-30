@@ -96,7 +96,7 @@ public class NotesServices {
             data_nota.put("apellidos", estudiante.getLastName());
             data_nota.put("asignatura", asignatura.getName());
             data_nota.put("id_asignatura", idAsignatura + "");
-            data_nota.put("grado", asignatura.getGrade() + "");
+            data_nota.put("grade", asignatura.getGrade() + "");
             data_nota.put("as", note.getAcs() + "");
             data_nota.put("tcp1", note.getTcp1() + "");
             data_nota.put("tcp2", note.getTcp2() + "");

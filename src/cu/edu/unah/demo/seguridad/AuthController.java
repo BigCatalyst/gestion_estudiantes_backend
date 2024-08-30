@@ -5,6 +5,7 @@
  */
 package cu.edu.unah.demo.seguridad;
 
+import cu.edu.unah.demo.exceptions.BadRequestException;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.serializadores.*;
 import cu.edu.unah.demo.services.TokenInvalidoServices;
@@ -17,6 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import cu.edu.unah.demo.seguridad.CustomUserDetailService;
+import java.util.List;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import org.springframework.http.MediaType;
+
+@CrossOrigin(origins = "http://localhost:5173")//
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -32,6 +39,8 @@ public class AuthController {
     public AuthController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
+    
+    
     
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AutenticationRequestBody autentication){//(@RequestParam String username, @RequestParam String password) {
