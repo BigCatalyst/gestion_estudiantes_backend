@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.services.*;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
+import org.hibernate.id.IdentifierGenerationException;
 
 @RequestMapping("/Careers")
 @RestController
@@ -96,6 +98,22 @@ public class CareersController {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte() {
+        try {
+            return ReportesUtiles.generarReporte(careersservices.getDatosCarreras());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -42,4 +42,23 @@ public class CareersServices {
     public void delete(Integer id) {
         careersrepository.deleteById(id);
     }
+    
+    public String[][] getDatosCarreras() {
+        return getDatosCarreras(findAll());
+    }
+    private String[][] getDatosCarreras(List<Careers> carreras) {
+        String[] titulos = new String[]{"Nombre", "Cantidad"};
+        String[][] datos = new String[carreras.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"3", "1"};
+        int row = 2;
+        for (Careers careers : carreras) {
+            
+            datos[row][0] = careers.getName();
+            datos[row][1] = careers.getAmount()+"";
+            
+            row++;
+        }
+        return datos;
+    }
 }
