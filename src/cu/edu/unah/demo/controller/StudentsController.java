@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.services.*;
 import cu.edu.unah.demo.serializadores.*;
 import java.util.HashMap;
@@ -136,6 +137,54 @@ public class StudentsController {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = {"/reporte/escalafon"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporteEscalafon() {
+        try {
+            return ReportesUtiles.generarReporte(studentsservices.getDatosEscalafon(studentsservices.obtenerEscalafon()));
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte() {
+        try {
+            return ReportesUtiles.generarReporte(studentsservices.getDatosEstudiantes());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte/grado/{gradeid}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte(@PathVariable Integer gradeid) {
+        try {
+            return ReportesUtiles.generarReporte(studentsservices.getDatosEstudiantes(gradeid));
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

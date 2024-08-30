@@ -194,4 +194,49 @@ public class StudentsServices {
         
         return estudiantesOrdenados;
     }
+    
+    public String[][] getDatosEscalafon(List<UbicacionEscalafonResponse> ubicaciones) {
+        String[] titulos = new String[]{"Ci", "Nombre", "Apellido", "Promedio", "No."};
+        String[][] datos = new String[ubicaciones.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"2", "3", "3", "1", "1"};
+        int row = 2;
+        for (UbicacionEscalafonResponse ubicacion : ubicaciones) {
+            Students estudiante=ubicacion.getEstudiante();
+            datos[row][0] = estudiante.getCi();
+            datos[row][1] = estudiante.getName();
+            datos[row][2] = estudiante.getLastName();
+            datos[row][3] = ubicacion.getPromedio()+"";
+            datos[row][4] = ubicacion.getLugar()+"";
+            
+            row++;
+        }
+        return datos;
+    }
+    public String[][] getDatosEstudiantes(int grade) {
+        return getDatosEstudiantes(findAll(grade));
+    }
+    
+    public String[][] getDatosEstudiantes() {
+        return getDatosEstudiantes(findAll());
+    }
+    private String[][] getDatosEstudiantes(List<Students> estudiantes) {
+        String[] titulos = new String[]{"Ci", "Nombre", "Apellido", "Grado", "No.Reg","Genero","direccion"};
+        String[][] datos = new String[estudiantes.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"2", "2", "2", "1", "1","1","2"};
+        int row = 2;
+        for (Students estudiante : estudiantes) {
+            datos[row][0] = estudiante.getCi();
+            datos[row][1] = estudiante.getName();
+            datos[row][2] = estudiante.getLastName();
+            datos[row][3] = estudiante.getGrade()+"";
+            datos[row][4] = estudiante.getRegNumber()+"";
+            datos[row][5] = estudiante.getSex()+"";
+            datos[row][6] = estudiante.getAddress()+"";
+            
+            row++;
+        }
+        return datos;
+    }
 }

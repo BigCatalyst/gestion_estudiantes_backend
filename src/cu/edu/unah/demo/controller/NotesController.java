@@ -139,10 +139,50 @@ public class NotesController {
         }
     }
 
-    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity reporte() {
+    @GetMapping(path = {"/reporte/subject/{subjectId}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte( @PathVariable Integer subjectId) {
         try {
-            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotes());
+            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotes(subjectId));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte/grade/{gradeid}/{subjectId}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporteByGrade( @PathVariable Integer gradeid, @PathVariable Integer subjectId) {
+        try {
+            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotesByGrade(gradeid,subjectId));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte/grade/student/{gradeid}/{studentCi}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporteByGrade( @PathVariable Integer gradeid, @PathVariable String studentCi) {
+        try {
+            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotesByGrade(gradeid,studentCi));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte/grade/{gradeid}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporteByGrade( @PathVariable Integer gradeid) {
+        try {
+            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotesByGrade(gradeid));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(path = {"/reporte/student/{studentCi}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporteCi(@PathVariable String studentCi) {
+        try {
+            return ReportesUtiles.generarReporte(notesservices.getDatosReporteNotes(studentCi));
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);

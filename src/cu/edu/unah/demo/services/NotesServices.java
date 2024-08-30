@@ -38,6 +38,66 @@ public class NotesServices {
         return notas;
     }
 
+    public List<Notes> findAll(int subjectId) {
+        ArrayList<Notes> notas = new ArrayList<>();
+        for (Notes note : findAll()) {
+            NotesPK notepk = note.getNotesPK();
+            if (notepk.getSubjectId() == subjectId) {
+                notas.add(note);
+            }
+        }
+        return notas;
+    }
+
+    public List<Notes> findByGrade(int grade, int subjectId) {
+        ArrayList<Notes> notas = new ArrayList<>();
+        for (Notes note : findAll()) {
+            NotesPK notepk = note.getNotesPK();
+
+            if (notepk.getSubjectId() == subjectId) {
+                Subjects asignatura = subjectsservices.findById(subjectId);
+                if (asignatura.getGrade() == grade) {
+                    notas.add(note);
+                }
+
+            }
+        }
+        return notas;
+    }
+
+    public List<Notes> findByGrade(int grade, String studentCi) {
+        ArrayList<Notes> notas = new ArrayList<>();
+        for (Notes note : findAll()) {
+            NotesPK notepk = note.getNotesPK();
+            if (notepk.getStudentCi().equals(studentCi)) {
+
+                int subjectId = notepk.getSubjectId();
+                Subjects asignatura = subjectsservices.findById(subjectId);
+                if (asignatura.getGrade() == grade) {
+                    notas.add(note);
+                }
+
+            }
+
+        }
+        return notas;
+    }
+
+    public List<Notes> findByGrade(int grade) {
+        ArrayList<Notes> notas = new ArrayList<>();
+        for (Notes note : findAll()) {
+            NotesPK notepk = note.getNotesPK();
+
+            int subjectId = notepk.getSubjectId();
+            Subjects asignatura = subjectsservices.findById(subjectId);
+            if (asignatura.getGrade() == grade) {
+                notas.add(note);
+            }
+
+        }
+        return notas;
+    }
+
     public Notes findById(String studentCi, int subjectId) {
         for (Notes note : findAll()) {
             NotesPK notepk = note.getNotesPK();
@@ -107,24 +167,44 @@ public class NotesServices {
         }
         return response;
     }
-    
-    public String[][] getDatosReporteNotes(){
-        List<Notes> notas=findAll();
-        String []titulos=new String[]{"Ci","Asignatura","Grado","AS","TCP1","TCP2","EF","FN"};
-        String[][] datos=new String[notas.size()+2][titulos.length];
-        datos[0]=titulos;
-        datos[1]=new String[]{"3","3","1","1","1","1","1","1"};
-        int row=2;
+
+    public String[][] getDatosReporteNotes() {
+        return getDatosReporteNotes(findAll());
+    }
+
+    public String[][] getDatosReporteNotes(String ci) {
+        List<Notes> notas = findAll(ci);
+        return getDatosReporteNotes(notas);
+    }
+
+    public String[][] getDatosReporteNotes(int subjectId) {
+        return getDatosReporteNotes(findAll(subjectId));
+    }
+
+    public String[][] getDatosReporteNotesByGrade(int grade, int subjectId) {
+        return getDatosReporteNotes(findByGrade(grade, subjectId));
+    }
+
+    public String[][] getDatosReporteNotesByGrade(int grade) {
+        return getDatosReporteNotes(findByGrade(grade));
+    }
+
+    private String[][] getDatosReporteNotes(List<Notes> notas) {
+        String[] titulos = new String[]{"Ci", "Asignatura", "Grado", "AS", "TCP1", "TCP2", "EF", "FN"};
+        String[][] datos = new String[notas.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"3", "3", "1", "1", "1", "1", "1", "1"};
+        int row = 2;
         for (Notes nota : notas) {
-            Subjects asignatura=subjectsservices.findById(nota.getNotesPK().getSubjectId());
-            datos[row][0]=studentsservices.findById(nota.getNotesPK().getStudentCi()).getName();
-            datos[row][1]=asignatura.getName();
-            datos[row][2]=asignatura.getGrade()+"";
-            datos[row][3]=nota.getAcs()!=null?nota.getAcs()+"":"";
-            datos[row][4]=nota.getTcp1()!=null?nota.getTcp1()+"":"";
-            datos[row][5]=nota.getTcp2()!=null?nota.getTcp2()+"":"";
-            datos[row][6]=nota.getFinalExam()!=null?nota.getFinalExam()+"":"";
-            datos[row][7]=nota.getFinalNote()!=null?nota.getFinalNote()+"":"";
+            Subjects asignatura = subjectsservices.findById(nota.getNotesPK().getSubjectId());
+            datos[row][0] = studentsservices.findById(nota.getNotesPK().getStudentCi()).getName();
+            datos[row][1] = asignatura.getName();
+            datos[row][2] = asignatura.getGrade() + "";
+            datos[row][3] = nota.getAcs() != null ? nota.getAcs() + "" : "";
+            datos[row][4] = nota.getTcp1() != null ? nota.getTcp1() + "" : "";
+            datos[row][5] = nota.getTcp2() != null ? nota.getTcp2() + "" : "";
+            datos[row][6] = nota.getFinalExam() != null ? nota.getFinalExam() + "" : "";
+            datos[row][7] = nota.getFinalNote() != null ? nota.getFinalNote() + "" : "";
             row++;
         }
         return datos;
