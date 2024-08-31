@@ -207,7 +207,7 @@ public class StudentsServices {
             datos[row][0] = estudiante.getCi();
             datos[row][1] = estudiante.getName();
             datos[row][2] = estudiante.getLastName();
-            datos[row][3] = ubicacion.getPromedio()+"";
+            datos[row][3] = String.format("%.2f", ubicacion.getPromedio());//ubicacion.getPromedio()+"";
             datos[row][4] = ubicacion.getLugar()+"";
             
             row++;
