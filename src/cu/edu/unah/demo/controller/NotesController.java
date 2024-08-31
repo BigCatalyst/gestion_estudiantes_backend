@@ -51,6 +51,23 @@ public class NotesController {
         }
     }
 
+    @GetMapping(path = {"/findAll/{gradeid}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<Notes>> findAll(@PathVariable Integer gradeid) {
+        try {
+
+            List<Notes> notas = notesservices.findByGrade(gradeid);
+
+            return new ResponseEntity<>(notas, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    
     @GetMapping(path = {"/find/{studentCi}/{subjectId}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Notes> findById(@PathVariable String studentCi, @PathVariable Integer subjectId) {
         try {

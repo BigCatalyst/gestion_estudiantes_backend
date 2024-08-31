@@ -31,6 +31,8 @@ import org.springframework.http.HttpStatus;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
@@ -52,11 +54,13 @@ import org.springframework.http.ResponseEntity;
  */
 public class ReportesUtiles {
 
-    public static ResponseEntity<byte[]> generarReporte(String data[][]) throws DocumentException {
+    public static ResponseEntity<byte[]> generarReporte(String data[][]) throws DocumentException, FileNotFoundException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
+//        File f=new File("tablas.pdf");
+//        System.out.println(f.getAbsolutePath());
+//        System.out.println(f.getParentFile());
         Document document = new Document();
-        PdfWriter.getInstance(document, byteArrayOutputStream);
+        PdfWriter.getInstance(document,byteArrayOutputStream);//new FileOutputStream(f));// byteArrayOutputStream);
         document.open();
         
         int cantidad_de_columnas=data[0].length;

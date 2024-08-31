@@ -129,10 +129,15 @@ public class UsersController {
         }
     }
     
-    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = {"/reporte"})
     public ResponseEntity reporte() {
+        System.out.println("entro?");
         try {
-            return ReportesUtiles.generarReporte(usersServices.getDatosUsers());
+            String [][]data=usersServices.getDatosUsers();
+            System.out.println("paso la obtencion de los datos");
+            ResponseEntity response=ReportesUtiles.generarReporte(data);
+            System.out.println("paso la creacion del response");
+            return response;
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
