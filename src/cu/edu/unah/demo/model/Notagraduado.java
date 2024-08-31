@@ -57,6 +57,9 @@ public class Notagraduado implements Serializable {
     private Double pruebafinal;
     @Column(name = "notafinal")
     private Double notafinal;
+    
+    @Column(name = "idgraduado")
+    private Integer idgraduado;
 //    @JoinColumn(name = "idgraduado", referencedColumnName = "id")
 //    @ManyToOne
 //    private Graduado idgraduado;
@@ -129,6 +132,10 @@ public class Notagraduado implements Serializable {
         this.notafinal = notafinal;
     }
 
+    public Integer getIdgraduado() {
+        return idgraduado;
+    }
+
 //    public Graduado getIdgraduado() {
 //        return idgraduado;
 //    }
@@ -136,6 +143,9 @@ public class Notagraduado implements Serializable {
 //    public void setIdgraduado(Graduado idgraduado) {
 //        this.idgraduado = idgraduado;
 //    }
+    public void setIdgraduado(Integer idgraduado) {
+        this.idgraduado = idgraduado;
+    }
 
     @Override
     public int hashCode() {

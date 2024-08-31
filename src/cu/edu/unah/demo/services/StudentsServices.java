@@ -107,6 +107,7 @@ public class StudentsServices {
                 notagraduado.setNotafinal((double) nota.getFinalNote());
                 notagraduado.setNombreasignatura(nota.getSubjects().getName());
                 notagraduado.setTcp1((double) nota.getTcp1());
+                notagraduado.setIdgraduado(graduado.getId());
                 if (nota.getTcp2() != null) {
                     notagraduado.setTcp2((double) nota.getTcp2());
                 }
