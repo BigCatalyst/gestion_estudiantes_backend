@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
+import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.services.*;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
+import org.hibernate.id.IdentifierGenerationException;
 
 @RequestMapping("/Notagraduado")
 @RestController
@@ -35,7 +37,7 @@ public class NotagraduadoController {
             return new ResponseEntity<List<Notagraduado>>(notagraduadoservices.findAll(), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -48,7 +50,7 @@ public class NotagraduadoController {
             return new ResponseEntity<Notagraduado>(notagraduadoservices.findById(id), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -77,9 +79,9 @@ public class NotagraduadoController {
             Notagraduado result = notagraduadoservices.update(notagraduado);
             return new ResponseEntity<>(result, HttpStatus.OK);
             //return ResponseEntity.created(new URI("/Notagraduado/updated/" + result.getId())).body(result);
-        } catch (EntityNotFoundException  e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -93,10 +95,26 @@ public class NotagraduadoController {
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch ( EntityExistsException |BadRequestException e) {
+        } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity reporte() {
+        try {
+            return ReportesUtiles.generarReporte(notagraduadoservices.getDatosReporteNotasGraduado());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
