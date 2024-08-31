@@ -5,6 +5,8 @@
  */
 package cu.edu.unah.demo.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cu.edu.unah.demo.serializadores.*;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -35,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Notagraduado.findByTcp2", query = "SELECT n FROM Notagraduado n WHERE n.tcp2 = :tcp2")
     , @NamedQuery(name = "Notagraduado.findByPruebafinal", query = "SELECT n FROM Notagraduado n WHERE n.pruebafinal = :pruebafinal")
     , @NamedQuery(name = "Notagraduado.findByNotafinal", query = "SELECT n FROM Notagraduado n WHERE n.notafinal = :notafinal")})
+@JsonSerialize(using = NotasGraduadoSerializer.class)
 public class Notagraduado implements Serializable {
 
     private static final long serialVersionUID = 1L;
