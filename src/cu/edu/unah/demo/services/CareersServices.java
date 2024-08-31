@@ -17,6 +17,17 @@ public class CareersServices {
     public List<Careers> findAll() {
         return careersrepository.findAll();
     }
+    
+    public int getIdCorrespondiente(){
+        List<Careers> entidades=findAll();
+        if(entidades.isEmpty()){
+            return 1;
+        }
+        entidades.sort((o1, o2) -> {
+            return o1.getId().compareTo(o2.getId()); //To change body of generated lambdas, choose Tools | Templates.
+        });
+        return entidades.get(entidades.size()-1).getId()+1;
+    }
 
     public Careers findById(Integer id) {
         if (!careersrepository.existsById(id)) {
@@ -29,6 +40,7 @@ public class CareersServices {
         if (careers.getId() != null && careersrepository.existsById(careers.getId())) {
             throw new EntityExistsException("There is already existing entity with such ID in the database.");
         }
+        careers.setId(getIdCorrespondiente());
         return careersrepository.save(careers);
     }
 
