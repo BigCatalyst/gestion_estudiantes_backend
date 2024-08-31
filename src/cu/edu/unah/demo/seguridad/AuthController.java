@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import cu.edu.unah.demo.seguridad.CustomUserDetailService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import java.util.List;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -28,41 +30,39 @@ import org.springframework.http.MediaType;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    
+
     private final JwtUtil jwtUtil;
-    
+
     @Autowired
     private TokenInvalidoServices tokenInvalidoServices;
-    
+
     @Autowired
-    private  CustomUserDetailService userDetailsService;
+    private CustomUserDetailService userDetailsService;
 
     public AuthController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-    
-    
-    
+
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody AutenticationRequestBody autentication){//(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity login(@RequestBody AutenticationRequestBody autentication) {//(@RequestParam String username, @RequestParam String password) {
         // Aquí deberías validar las credenciales del usuario (ej. consultando a la base de datos)
-        String username=autentication.getUsername();
-        String password=autentication.getPassword();
-        if(username==null || password==null){
-            System.out.println("username:"+username);
+        String username = autentication.getUsername();
+        String password = autentication.getPassword();
+        if (username == null || password == null) {
+            System.out.println("username:" + username);
             System.out.println("bad request: username null");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        
-        Users usuario=userDetailsService.findByUsername(username);
+
+        Users usuario = userDetailsService.findByUsername(username);
         System.out.println(usuario);
-        if(usuario==null){
-            System.out.println("username:"+username);
+        if (usuario == null) {
+            System.out.println("username:" + username);
             System.out.println("bad request");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if(!usuario.getPassword().equals(DigestUtils.shaHex(password))){
-            System.out.println("username:"+username);
+        if (!usuario.getPassword().equals(DigestUtils.shaHex(password))) {
+            System.out.println("username:" + username);
             System.out.println("contraseña incorrecta");
             System.out.println(usuario.getPassword());
             System.out.println(password);
@@ -70,49 +70,55 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         System.out.println("no fue bad");
-        HashMap<String,String> reponse=new HashMap<>();
-        reponse.put("token",jwtUtil.generarToken(autentication.getUsername()) );
+        HashMap<String, String> reponse = new HashMap<>();
+        reponse.put("token", jwtUtil.generarToken(autentication.getUsername()));
         System.out.println("va a dar respuesta");
         // Si las credenciales son válidas
-        return new ResponseEntity<>(reponse,HttpStatus.OK);
+        return new ResponseEntity<>(reponse, HttpStatus.OK);
     }
-    
+
     @PostMapping("/logout")
-    public ResponseEntity logout(@RequestBody LogoutRequestBody logoutRequestBody){//(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity logout(@RequestBody LogoutRequestBody logoutRequestBody) {//(@RequestParam String username, @RequestParam String password) {
         // Aquí deberías validar las credenciales del usuario (ej. consultando a la base de datos)
-        String token=logoutRequestBody.getToken();
+        String token = logoutRequestBody.getToken();
         String username = null;
-        
-        JwtUtil jwtUtil=new JwtUtil();
+
+        JwtUtil jwtUtil = new JwtUtil();
         jwtUtil.setTokenInvalidoServices(tokenInvalidoServices);
-        HashMap<String,String> reponse=new HashMap<>();
-        
-        try{
+        HashMap<String, String> reponse = new HashMap<>();
+
+        try {
             username = jwtUtil.extraerUsername(token);
-        }catch(SignatureException ex){
+        } catch (SignatureException ex) {
             System.out.println("token incorrecto");
             reponse.put("error", "token incorrecto");
-            return new ResponseEntity<>(reponse,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(reponse, HttpStatus.OK);
+        } catch (MalformedJwtException ex) {
+            System.out.println("token incorrecto");
+            return new ResponseEntity<>(reponse, HttpStatus.OK);
+        } catch (ExpiredJwtException ex) {
+            System.out.println("token expirado");
+            return new ResponseEntity<>(reponse, HttpStatus.OK);
         }
-        
-        if(tokenInvalidoServices.existTokeninvalido(token)){
+
+        if (tokenInvalidoServices.existTokeninvalido(token)) {
             System.out.println("bad request Token invalido existe");
             reponse.put("error", "Token invalidado");
-            return new ResponseEntity<>(reponse,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(reponse, HttpStatus.OK);
         }
-        
-        if(!jwtUtil.validarToken(token, username)){
+
+        if (!jwtUtil.validarToken(token, username)) {
             System.out.println("bad request Token invalido ");
             reponse.put("error", "Token invalido ");
-            return new ResponseEntity<>(reponse,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(reponse, HttpStatus.OK);
         }
-        Tokeninvalido tokenInvalido=new Tokeninvalido();
+        Tokeninvalido tokenInvalido = new Tokeninvalido();
         tokenInvalido.setToken(token);
         tokenInvalidoServices.save(tokenInvalido);
-        
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
 //    @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 //    public ResponseEntity reporte() {
 //        try {
@@ -122,4 +128,3 @@ public class AuthController {
 //        }
 //    }
 }
-
