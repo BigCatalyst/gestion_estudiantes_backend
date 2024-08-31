@@ -47,6 +47,7 @@ public class AltasBajasServices {
 
     public AltasBajas update(AltasBajas altasbajas) {
         if (altasbajas.getCi() != null && !altasbajasrepository.existsById(altasbajas.getCi())) {
+            System.out.println("no encuentra el ci");
             throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         return altasbajasrepository.save(altasbajas);

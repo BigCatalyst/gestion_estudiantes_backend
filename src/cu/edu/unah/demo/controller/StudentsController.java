@@ -45,6 +45,19 @@ public class StudentsController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping(path = {"/findAll/{gradeid}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<Students>> findAll(@PathVariable Integer gradeid) {
+        try {
+            return new ResponseEntity<List<Students>>(studentsservices.findAll(gradeid), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping(path = {"/find/{id}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Students> findById(@PathVariable String id) {
@@ -122,6 +135,7 @@ public class StudentsController {
         } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
             HashMap<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
+            System.out.println(e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
 

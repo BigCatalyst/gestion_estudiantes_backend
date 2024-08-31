@@ -75,6 +75,7 @@ public class AltasBajasController {
     @PutMapping(path = {"/update"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AltasBajas> update(@RequestBody AltasBajas altasbajas) throws URISyntaxException {
         if (altasbajas.getCi() == null) {
+            System.out.println("ci nulo");
             return new ResponseEntity<AltasBajas>(HttpStatus.NOT_FOUND);
         }
         try {
@@ -82,6 +83,7 @@ public class AltasBajasController {
             //return ResponseEntity.created(new URI("/AltasBajas/updated/" + result.getCi())).body(result);
             return new ResponseEntity<AltasBajas>(result, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
+            System.out.println("paso por el not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (EntityExistsException | BadRequestException e) {
             HashMap<String, String> response = new HashMap<>();
