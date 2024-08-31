@@ -18,7 +18,16 @@ public class SubjectsServices {
     public List<Subjects> findAll() {
         return subjectsrepository.findAll();
     }
-
+    public int getIdCorrespondiente(){
+        List<Subjects> asignaturas=findAll();
+        if(asignaturas.isEmpty()){
+            return 1;
+        }
+        asignaturas.sort((o1, o2) -> {
+            return o1.getId().compareTo(o2.getId()); //To change body of generated lambdas, choose Tools | Templates.
+        });
+        return asignaturas.get(asignaturas.size()-1).getId()+1;
+    }
     public Subjects getSubjects(String nombre) {
         for (Subjects subjects : findAll()) {
             if (subjects.getName().equals(nombre)) {
@@ -54,6 +63,7 @@ public class SubjectsServices {
                 throw new BadRequestException("Ya existe otra asignatura con ese nombre");
             }
         }
+        subjects.setId(getIdCorrespondiente());
 
         return subjectsrepository.save(subjects);
     }
