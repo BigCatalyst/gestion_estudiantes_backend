@@ -6,7 +6,9 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
+import cu.edu.unah.demo.serializadores.EleccionBoleta;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,14 +31,14 @@ public class StudentCareerServices {
     public List<StudentCareer> findAll() {
         return studentcareerrepository.findAll();
     }
-    
+
     public List<StudentCareer> findAll(String studentCi) {
-        ArrayList<StudentCareer> lista=new ArrayList<>();
+        ArrayList<StudentCareer> lista = new ArrayList<>();
         for (StudentCareer entidadPadre : findAll()) {
             StudentCareerPK entidad = entidadPadre.getStudentCareerPK();
             if (entidad.getStudentCi().equals(studentCi)) {
-                    lista.add(entidadPadre);
-                }
+                lista.add(entidadPadre);
+            }
 
         }
         return lista;
@@ -98,13 +100,13 @@ public class StudentCareerServices {
         }
         studentcareerrepository.delete(studentCareer);
     }
-    
+
     public void delete(String studentCi) {
         List<StudentCareer> studentCareers = findAll(studentCi);
         for (StudentCareer studentCareer : studentCareers) {
             studentcareerrepository.delete(studentCareer);
         }
-        
+
     }
 
     public void crearBoleta(String ci, List<Integer> ids_carreras) {
@@ -131,5 +133,43 @@ public class StudentCareerServices {
             save(studentCareer);
         }
 
+    }
+
+    public List<EleccionBoleta> findAllBoletas() {
+        List<EleccionBoleta> elecciones = new ArrayList<>();
+        for (StudentCareer estudiantecarrera : findAll()) {
+            EleccionBoleta eleccion = new EleccionBoleta();
+            eleccion.setCarrera(careersservices.findById(estudiantecarrera.getStudentCareerPK().getCareerId()).getName());
+            eleccion.setCi(estudiantecarrera.getStudentCareerPK().getStudentCi());
+            eleccion.setLugar(estudiantecarrera.getIndex());
+            elecciones.add(eleccion);
+        }
+        elecciones.sort(new Comparator<EleccionBoleta>() {
+            @Override
+            public int compare(EleccionBoleta o1, EleccionBoleta o2) {
+                int response = o1.getCi().compareTo(o2.getCi());
+                return response != 0 ? response : new Integer(o1.getLugar()).compareTo(o2.getLugar());
+            }
+        });
+        return elecciones;
+    }
+
+    public String[][] getEleccionBoleta() {
+        return getEleccionBoleta(findAllBoletas());
+    }
+
+    private String[][] getEleccionBoleta(List<EleccionBoleta> elecciones) {
+        String[] titulos = new String[]{"Ci", "Carrera", "Puesto"};
+        String[][] datos = new String[elecciones.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"2", "2", "1"};
+        int row = 2;
+        for (EleccionBoleta eleccion : elecciones) {
+            datos[row][0] = eleccion.getCi();
+            datos[row][1] = eleccion.getCarrera();
+            datos[row][2] = eleccion.getLugar() + "";
+            row++;
+        }
+        return datos;
     }
 }
