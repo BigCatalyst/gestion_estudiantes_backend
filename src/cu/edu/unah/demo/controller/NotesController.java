@@ -155,6 +155,19 @@ public class NotesController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping(path = {"/notasestudiantes/{gradeid}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity findAllNotasConEstudiante(@PathVariable Integer gradeid) {
+        try {
+            return new ResponseEntity<>(notesservices.getNotasConEstudiante(gradeid), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping(path = {"/reporte/subject/{subjectId}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity reporte( @PathVariable Integer subjectId) {

@@ -142,10 +142,15 @@ public class NotesServices {
         }
         notesrepository.delete(note);
     }
-
+    public List<HashMap<String, String>> getNotasConEstudiante(int grade) {
+        return getNotasConEstudiante(findByGrade(grade));
+    }
     public List<HashMap<String, String>> getNotasConEstudiante() {
+        return getNotasConEstudiante(findAll());
+    }
+    private List<HashMap<String, String>> getNotasConEstudiante(List<Notes> notas) {
         ArrayList<HashMap<String, String>> response = new ArrayList<>();
-        for (Notes note : findAll()) {
+        for (Notes note : notas) {
             HashMap<String, String> data_nota = new HashMap<>();
             NotesPK notepk = note.getNotesPK();
             String ci = notepk.getStudentCi();
