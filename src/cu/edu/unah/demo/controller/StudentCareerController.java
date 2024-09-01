@@ -132,8 +132,8 @@ public class StudentCareerController {
         }
     }
 
-    @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity crearBoleta(
+    @PostMapping(path = {"/crearboletastr"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity crearBoletaStr(
             @RequestBody EstudianteCarrerasStringBodyRequest body
     ) {
         try {
@@ -150,14 +150,14 @@ public class StudentCareerController {
         }
     }
     
-    @PostMapping(path = {"/crearboletastr"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity crearBoleta(
-            @RequestBody EstudianteCarrerasStringBodyRequest body
+            @RequestBody EstudianteCarrerasBodyRequest body
     ) {
         try {
             String ci = body.getCi();
-            List<String> ids_carreras = body.getCarreras();
-            studentcareerservices.crearBoleta(ci, ids_carreras);
+            List<Integer> ids_carreras = body.getCarreras();
+            studentcareerservices.crearBoletaInst(ci, ids_carreras);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

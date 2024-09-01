@@ -137,7 +137,7 @@ public class StudentCareerServices {
 
     }
 
-    public void crearBoleta(String ci, List<Integer> ids_carreras) {
+    public void crearBoletaInst(String ci, List<Integer> ids_carreras) {
         Students student = studentsservices.findById(ci);
 
         ArrayList<Careers> carreras = new ArrayList<>();
