@@ -9,7 +9,10 @@ import cu.edu.unah.demo.repository.*;
 import cu.edu.unah.demo.serializadores.EleccionBoleta;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -134,7 +137,42 @@ public class StudentCareerServices {
         }
 
     }
-
+    
+    public List<HashMap<String,Object>> findAllBoletasFormato() {
+        HashMap<String,List<EleccionBoleta>> elecciones=new HashMap<>();
+        
+        
+        for (EleccionBoleta eleccion : findAllBoletas()) {
+            if(elecciones.containsKey(eleccion.getCi())){
+                elecciones.get(eleccion.getCi()).add(eleccion);
+            }else{
+                List<EleccionBoleta> elecciones_de_estudiante=new ArrayList<>();
+                elecciones_de_estudiante.add(eleccion);
+                elecciones.put(eleccion.getCi(), elecciones_de_estudiante);
+            }
+        }
+        List<HashMap<String,Object>> response=new ArrayList<>();
+        for (Map.Entry<String, List<EleccionBoleta>> entry : elecciones.entrySet()) {
+            HashMap<String,Object> boleta=new HashMap<>();
+            boleta.put("ci", entry.getKey());
+            List<EleccionBoleta> seleccionadas=entry.getValue();
+            seleccionadas.sort(new Comparator<EleccionBoleta>() {
+                @Override
+                public int compare(EleccionBoleta o1, EleccionBoleta o2) {
+                    return new Integer(o1.getLugar()).compareTo(o2.getLugar());
+                }
+            });
+            
+            List<String> seleccionadas_str=new LinkedList<>();
+            for (EleccionBoleta seleccionada : seleccionadas) {
+                seleccionadas_str.add(seleccionada.getCarrera());
+            }
+            boleta.put("carreras", seleccionadas_str);
+            response.add(boleta);
+        }
+        return response;
+    }
+    
     public List<EleccionBoleta> findAllBoletas() {
         List<EleccionBoleta> elecciones = new ArrayList<>();
         for (StudentCareer estudiantecarrera : findAll()) {

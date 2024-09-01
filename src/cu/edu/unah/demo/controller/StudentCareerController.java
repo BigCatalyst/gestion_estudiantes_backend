@@ -133,7 +133,7 @@ public class StudentCareerController {
     }
 
     @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity crearBoletan(
+    public ResponseEntity crearBoleta(
             @RequestBody EstudianteCarrerasBodyRequest body
     ) {
         try {
@@ -149,7 +149,20 @@ public class StudentCareerController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
-
+    
+    @GetMapping(path = {"/findAllBoletas"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<StudentCareer>> findAllBoletas() {
+        try {
+            return new ResponseEntity(studentcareerservices.findAllBoletasFormato(), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @GetMapping(path = {"/reporte"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity reporte() {
         try {
