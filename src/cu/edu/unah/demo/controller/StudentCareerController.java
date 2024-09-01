@@ -150,6 +150,25 @@ public class StudentCareerController {
         }
     }
     
+    @PutMapping(path = {"/ubdateboletastr"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity updateBoletaStr(
+            @RequestBody EstudianteCarrerasStringBodyRequest body
+    ) {
+        try {
+            String ci = body.getCi();
+            studentcareerservices.delete(ci);
+            List<String> ids_carreras = body.getCarreras();
+            studentcareerservices.crearBoletaStr(ci, ids_carreras);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity crearBoleta(
             @RequestBody EstudianteCarrerasBodyRequest body

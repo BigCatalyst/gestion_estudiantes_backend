@@ -122,7 +122,11 @@ public class StudentCareerServices {
             } else {
                 nombres_validados.add(nombre_carrera);
             }
-            carreras.add(careersservices.findById(nombre_carrera));
+            Careers carrera=careersservices.findById(nombre_carrera);
+            if(carrera==null){
+                throw new BadRequestException("No existe la carrera'"+carrera+"'");
+            }
+            carreras.add(carrera);
         }
         for (int i = 0; i < carreras.size(); i++) {
             Careers carrera = carreras.get(i);
