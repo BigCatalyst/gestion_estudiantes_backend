@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.reportes.ReportesUtiles;
-import cu.edu.unah.demo.serializadores.EstudianteCarrerasBodyRequest;
+import cu.edu.unah.demo.serializadores.*;
 import cu.edu.unah.demo.services.*;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
@@ -149,6 +149,24 @@ public class StudentCareerController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+    
+//    @PostMapping(path = {"/crearboletastr"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResponseEntity crearBoleta(
+//            @RequestBody EstudianteCarrerasStringBodyRequest body
+//    ) {
+//        try {
+//            String ci = body.getCi();
+//            List<String> ids_carreras = body.getCarreras();
+//            studentcareerservices.crearBoleta(ci, ids_carreras);
+//            return ResponseEntity.ok().build();
+//        } catch (EntityNotFoundException e) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+//            HashMap<String, String> response = new HashMap<>();
+//            response.put("error", e.getMessage());
+//            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+//        }
+//    }
     
     @GetMapping(path = {"/findAllBoletas"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<StudentCareer>> findAllBoletas() {

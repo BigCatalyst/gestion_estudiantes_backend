@@ -28,7 +28,16 @@ public class CareersServices {
         });
         return entidades.get(entidades.size()-1).getId()+1;
     }
-
+    
+    public Careers findById(String nombre_carrera) {
+        for (Careers careers : findAll()) {
+            if(careers.getName().equals(nombre_carrera)){
+                return careers;
+            }
+        }
+        return null;
+    }
+    
     public Careers findById(Integer id) {
         if (!careersrepository.existsById(id)) {
             throw new EntityNotFoundException("There is no entity with such ID in the database.");
