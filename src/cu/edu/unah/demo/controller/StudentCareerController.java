@@ -134,12 +134,12 @@ public class StudentCareerController {
 
     @PostMapping(path = {"/crearboleta"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity crearBoleta(
-            @RequestBody EstudianteCarrerasBodyRequest body
+            @RequestBody EstudianteCarrerasStringBodyRequest body
     ) {
         try {
             String ci = body.getCi();
-            List<Integer> ids_carreras = body.getCarreras();
-            studentcareerservices.crearBoleta(ci, ids_carreras);
+            List<String> ids_carreras = body.getCarreras();
+            studentcareerservices.crearBoletaStr(ci, ids_carreras);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -150,23 +150,23 @@ public class StudentCareerController {
         }
     }
     
-//    @PostMapping(path = {"/crearboletastr"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public ResponseEntity crearBoleta(
-//            @RequestBody EstudianteCarrerasStringBodyRequest body
-//    ) {
-//        try {
-//            String ci = body.getCi();
-//            List<String> ids_carreras = body.getCarreras();
-//            studentcareerservices.crearBoleta(ci, ids_carreras);
-//            return ResponseEntity.ok().build();
-//        } catch (EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
-//            HashMap<String, String> response = new HashMap<>();
-//            response.put("error", e.getMessage());
-//            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @PostMapping(path = {"/crearboletastr"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity crearBoleta(
+            @RequestBody EstudianteCarrerasStringBodyRequest body
+    ) {
+        try {
+            String ci = body.getCi();
+            List<String> ids_carreras = body.getCarreras();
+            studentcareerservices.crearBoleta(ci, ids_carreras);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
     
     @GetMapping(path = {"/findAllBoletas"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<StudentCareer>> findAllBoletas() {

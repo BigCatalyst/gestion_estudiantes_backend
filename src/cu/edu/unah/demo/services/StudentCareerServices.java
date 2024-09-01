@@ -111,31 +111,31 @@ public class StudentCareerServices {
         }
 
     }
-//    public void crearBoleta2(String ci, List<String> nombres_carreras) {
-//        Students student = studentsservices.findById(ci);
-//
-//        ArrayList<Careers> carreras = new ArrayList<>();
-//        HashSet<String> nombres_validados = new HashSet<>();
-//        for (String nombre_carrera : nombres_carreras) {
-//            if (nombres_validados.contains(nombre_carrera)) {
-//                throw new BadRequestException("Existen nombres de carreras repetidos");
-//            } else {
-//                nombres_validados.add(nombre_carrera);
-//            }
-//            carreras.add(careersservices.findById(ids_carrera));
-//        }
-//        for (int i = 0; i < carreras.size(); i++) {
-//            Careers carrera = carreras.get(i);
-//            StudentCareerPK studentCareerPK = new StudentCareerPK();
-//            studentCareerPK.setCareerId(carrera.getId());
-//            studentCareerPK.setStudentCi(student.getCi());
-//            StudentCareer studentCareer = new StudentCareer();
-//            studentCareer.setIndex(i);
-//            studentCareer.setStudentCareerPK(studentCareerPK);
-//            save(studentCareer);
-//        }
-//
-//    }
+    public void crearBoletaStr(String ci, List<String> nombres_carreras) {
+        Students student = studentsservices.findById(ci);
+
+        ArrayList<Careers> carreras = new ArrayList<>();
+        HashSet<String> nombres_validados = new HashSet<>();
+        for (String nombre_carrera : nombres_carreras) {
+            if (nombres_validados.contains(nombre_carrera)) {
+                throw new BadRequestException("Existen nombres de carreras repetidos");
+            } else {
+                nombres_validados.add(nombre_carrera);
+            }
+            carreras.add(careersservices.findById(nombre_carrera));
+        }
+        for (int i = 0; i < carreras.size(); i++) {
+            Careers carrera = carreras.get(i);
+            StudentCareerPK studentCareerPK = new StudentCareerPK();
+            studentCareerPK.setCareerId(carrera.getId());
+            studentCareerPK.setStudentCi(student.getCi());
+            StudentCareer studentCareer = new StudentCareer();
+            studentCareer.setIndex(i);
+            studentCareer.setStudentCareerPK(studentCareerPK);
+            save(studentCareer);
+        }
+
+    }
 
     public void crearBoleta(String ci, List<Integer> ids_carreras) {
         Students student = studentsservices.findById(ci);
