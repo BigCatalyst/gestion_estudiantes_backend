@@ -6,16 +6,24 @@ import javax.persistence.EntityNotFoundException;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
 import cu.edu.unah.demo.exceptions.*;
+import cu.edu.unah.demo.serializadores.BoletaEstudiante;
 import cu.edu.unah.demo.serializadores.UbicacionEscalafonResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StudentsServices {
+    
+    @Autowired
+    private CareersServices careersServices;
+    
+    @Autowired
+    private StudentCareerServices studentCareerServices;
 
     @Autowired
     private StudentsRepository studentsrepository;
@@ -34,7 +42,7 @@ public class StudentsServices {
 
     @Autowired
     private SubjectsServices subjectsservices;
-    
+
     @Autowired
     private OtorgamientoService otorgamientoService;
 
@@ -127,7 +135,23 @@ public class StudentsServices {
             update(estudiante);
         }
     }
-
+    
+    
+    public void realizarOtorgamiento(){
+        List<Careers> carrerasDisponibles=careersServices.findAll();
+        List<UbicacionEscalafonResponse> ubicacionEscalafon=obtenerEscalafon();
+        List<BoletaEstudiante> boletasEstudiantes=new ArrayList<>();
+        
+        List<HashMap<String,Object>> rawBoletasFormato=studentCareerServices.findAllBoletasFormato();
+        for (HashMap<String, Object> hashMap : rawBoletasFormato) {
+            BoletaEstudiante boletaEstudiante=new BoletaEstudiante();
+            boletaEstudiante.setCi(hashMap.get("ci").toString());
+            boletaEstudiante.setNombre_carreras((List<String>)hashMap.get("carreras"));
+            boletasEstudiantes.add(boletaEstudiante);
+        }
+        otorgarCarreras(carrerasDisponibles, boletasEstudiantes, ubicacionEscalafon);
+    }
+    
     public List<UbicacionEscalafonResponse> obtenerEscalafon() {
         List<Students> estudiantes = findAll(9);
         for (Students estudiante : estudiantes) {
@@ -152,22 +176,22 @@ public class StudentsServices {
                 if (es_de_noveno) {
                     if (note.getFinalNote() == null) {
                         double prom_asc = note.getAcs(); //en base a 10
-                        double prom_tcp = note.getTcp1() ;//* 0.4; //en base a 40
-                        if (note.getTcp2() != null&&asignatura.getTcp2()) {
-                            prom_tcp += note.getTcp2() ;//* 0.4;
+                        double prom_tcp = note.getTcp1();//* 0.4; //en base a 40
+                        if (note.getTcp2() != null && asignatura.getTcp2()) {
+                            prom_tcp += note.getTcp2();//* 0.4;
                             prom_tcp /= 2;
                         }
                         double acumulado_base_50 = prom_asc + prom_tcp;
                         double pf_base_50 = note.getFinalExam() / 2;
                         double nota_final = acumulado_base_50 + pf_base_50;
                         note.setFinalNote(new Float(nota_final));
-                        notesservices.save(note);
+                        notesservices.update(note);
                     }
                     suma_notas += note.getFinalNote();
                 } else {
                     double prom_asc = note.getAcs(); //en base a 10
                     double prom_tcp = note.getTcp1();// * 0.4; //en base a 40
-                    if (note.getTcp2() != null&&asignatura.getTcp2()) {
+                    if (note.getTcp2() != null && asignatura.getTcp2()) {
                         prom_tcp += note.getTcp2();// * 0.4;
                         prom_tcp /= 2;
                     }
@@ -195,15 +219,15 @@ public class StudentsServices {
             puesto.setPromedio(entry.getValue());
             estudiantesOrdenados.add(puesto);//
         }
-        Date date=new Date();
+        Date date = new Date();
         for (UbicacionEscalafonResponse estudiantesOrdenado : estudiantesOrdenados) {
-            String ci=estudiantesOrdenado.getEstudiante().getCi();
-            Otorgamiento otorgamiento=otorgamientoService.findById(ci);
-            if(otorgamiento==null){
-                otorgamiento=new Otorgamiento();
+            String ci = estudiantesOrdenado.getEstudiante().getCi();
+            Otorgamiento otorgamiento = otorgamientoService.findById(ci);
+            if (otorgamiento == null) {
+                otorgamiento = new Otorgamiento();
                 otorgamiento.setCi(ci);
                 otorgamiento.setNoescalafon(estudiantesOrdenado.getLugar());
-                otorgamiento.setYeargraduacion(date.getYear()+1900);
+                otorgamiento.setYeargraduacion(date.getYear() + 1900);
                 System.out.println(otorgamiento.getYeargraduacion());
                 otorgamiento.setNotaescalafon(estudiantesOrdenado.getPromedio());
                 otorgamientoService.save(otorgamiento);
@@ -211,7 +235,60 @@ public class StudentsServices {
         }
         return estudiantesOrdenados;
     }
+    
+    
+    public void otorgarCarreras(List<Careers> carrerasDisponibles, 
+                                                List<BoletaEstudiante> boletasEstudiantes, 
+                                                List<UbicacionEscalafonResponse> ubicacionEscalafon) {
+        Date date = new Date();
+        
+        // Mapa para llevar el control de las plazas disponibles por carrera
+        Map<String, Integer> plazasDisponibles = carrerasDisponibles.stream()
+            .collect(Collectors.toMap(Careers::getName, Careers::getAmount));
 
+        List<Otorgamiento> otorgamientos = new ArrayList<>();
+        
+        // Asignar carreras, considerando la priorización de escalafón y deseos
+        for (UbicacionEscalafonResponse ubicacion : ubicacionEscalafon) {
+            String ciEstudiante = ubicacion.getEstudiante().getCi();
+            BoletaEstudiante boleta = boletasEstudiantes.stream()
+                .filter(b -> b.getCi().equals(ciEstudiante))
+                .findFirst()
+                .orElse(null);
+            
+            if (boleta != null) {
+                // Buscar la carrera que puede ser asignada según los deseos y disponibilidad
+                for (String deseo : boleta.nombre_carreras) {
+                    Integer plazas = plazasDisponibles.get(deseo);
+                    if (plazas != null && plazas > 0) {
+                        Otorgamiento otorgamiento=otorgamientoService.findById(ciEstudiante);
+                        if(otorgamiento==null){
+                            otorgamiento = new Otorgamiento();
+                            otorgamiento.setCi(ciEstudiante);
+                            otorgamiento.setNoescalafon(ubicacion.getLugar());
+                            otorgamiento.setYeargraduacion(date.getYear() + 1900);
+                            System.out.println(otorgamiento.getYeargraduacion());
+                            otorgamiento.setNotaescalafon(ubicacion.getPromedio());
+                            otorgamiento.setCarrera(deseo);
+                            otorgamientoService.save(otorgamiento);
+                        }else {
+                            otorgamiento.setCarrera(deseo);
+                            otorgamientoService.update(otorgamiento);
+                        }
+                        
+//                        // Asignamos la carrera
+//                        otorgamientos.add(new Otorgamiento(ciEstudiante, deseo));
+                        // Reducimos la cantidad de plazas disponibles
+                        plazasDisponibles.put(deseo, plazas - 1);
+                        break; // Salimos del bucle ya que el estudiante ha sido asignado
+                    }
+                }
+            }
+        }
+        
+    
+    }
+    
     public String[][] getDatosEscalafon(List<UbicacionEscalafonResponse> ubicaciones) {
         String[] titulos = new String[]{"Ci", "Nombre", "Apellido", "Promedio", "No."};
         String[][] datos = new String[ubicaciones.size() + 2][titulos.length];
@@ -230,7 +307,9 @@ public class StudentsServices {
         }
         return datos;
     }
-
+    
+    
+    
     public String[][] getDatosEstudiantes(int grade) {
         return getDatosEstudiantes(findAll(grade));
     }

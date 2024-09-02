@@ -188,7 +188,7 @@ public class StudentCareerController {
     }
     
     @GetMapping(path = {"/findAllBoletas"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<StudentCareer>> findAllBoletas() {
+    public ResponseEntity findAllBoletas() {
         try {
             return new ResponseEntity(studentcareerservices.findAllBoletasFormato(), HttpStatus.OK);
         } catch (EntityNotFoundException e) {

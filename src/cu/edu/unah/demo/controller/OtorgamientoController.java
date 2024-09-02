@@ -5,7 +5,6 @@
  */
 package cu.edu.unah.demo.controller;
 
-
 import cu.edu.unah.demo.exceptions.BadRequestException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,6 +32,7 @@ import javax.persistence.EntityExistsException;
 @RequestMapping("/Otorgamiento")
 @RestController
 public class OtorgamientoController {
+
     @Autowired
     private OtorgamientoService otorgamientoservices;
 
@@ -106,7 +106,7 @@ public class OtorgamientoController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @DeleteMapping(path = {"/deleteall"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Void> delete() {
         try {

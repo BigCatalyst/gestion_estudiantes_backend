@@ -153,6 +153,20 @@ public class StudentsController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping(path = {"/realizarotorgamiento"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity realizarOtorgamiento() {
+        try {
+            studentsservices.realizarOtorgamiento();
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping(path = {"/reporte/escalafon"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity reporteEscalafon() {
