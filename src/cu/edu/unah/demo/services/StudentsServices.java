@@ -34,6 +34,9 @@ public class StudentsServices {
 
     @Autowired
     private SubjectsServices subjectsservices;
+    
+    @Autowired
+    private OtorgamientoService otorgamientoService;
 
     public List<Students> findAll() {
         return studentsrepository.findAll();
@@ -192,7 +195,20 @@ public class StudentsServices {
             puesto.setPromedio(entry.getValue());
             estudiantesOrdenados.add(puesto);//
         }
-
+        Date date=new Date();
+        for (UbicacionEscalafonResponse estudiantesOrdenado : estudiantesOrdenados) {
+            String ci=estudiantesOrdenado.getEstudiante().getCi();
+            Otorgamiento otorgamiento=otorgamientoService.findById(ci);
+            if(otorgamiento==null){
+                otorgamiento=new Otorgamiento();
+                otorgamiento.setCi(ci);
+                otorgamiento.setNoescalafon(estudiantesOrdenado.getLugar());
+                otorgamiento.setYeargraduacion(date.getYear()+1900);
+                System.out.println(otorgamiento.getYeargraduacion());
+                otorgamiento.setNotaescalafon(estudiantesOrdenado.getPromedio());
+                otorgamientoService.save(otorgamiento);
+            }
+        }
         return estudiantesOrdenados;
     }
 
