@@ -206,7 +206,7 @@ public class NotesServices {
         int row = 2;
         for (Notes nota : notas) {
             Subjects asignatura = subjectsservices.findById(nota.getNotesPK().getSubjectId());
-            datos[row][0] = studentsservices.findById(nota.getNotesPK().getStudentCi()).getName();
+            datos[row][0] = nota.getNotesPK().getStudentCi();//studentsservices.findById().getName();
             datos[row][1] = asignatura.getName();
             datos[row][2] = asignatura.getGrade() + "";
             datos[row][3] = nota.getAcs() != null ? nota.getAcs() + "" : "";
