@@ -1,5 +1,6 @@
 package cu.edu.unah.demo.controller;
 
+import com.itextpdf.text.DocumentException;
 import cu.edu.unah.demo.exceptions.BadRequestException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,6 +22,7 @@ import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.reportes.ReportesUtiles;
 import cu.edu.unah.demo.services.*;
 import cu.edu.unah.demo.serializadores.*;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import javax.persistence.EntityExistsException;
 import javax.persistence.PersistenceException;
@@ -32,6 +34,9 @@ public class StudentsController {
 
     @Autowired
     private StudentsServices studentsservices;
+    
+    @Autowired
+    private OtorgamientoService otorgamientoService;
 
     @GetMapping(path = {"/findAll"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<Students>> findAll() {
@@ -155,10 +160,12 @@ public class StudentsController {
     }
     
     @GetMapping(path = {"/realizarotorgamiento"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity realizarOtorgamiento() {
+    public ResponseEntity realizarOtorgamiento() throws FileNotFoundException, DocumentException {
         try {
             studentsservices.realizarOtorgamiento();
-            return new ResponseEntity(HttpStatus.OK);
+            
+            return ReportesUtiles.generarReporte(otorgamientoService.getDatosReporteOtorgamiento());
+            //return new ResponseEntity(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {

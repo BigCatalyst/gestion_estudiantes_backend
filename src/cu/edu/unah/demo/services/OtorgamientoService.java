@@ -64,4 +64,25 @@ public class OtorgamientoService {
             delete(otorgamiento.getId());
         }
     }
+    public String[][] getDatosReporteOtorgamiento() {
+        return getDatosReporteOtorgamiento(findAll());
+    }
+    private String[][] getDatosReporteOtorgamiento(List<Otorgamiento> otorgamientos) {
+        String[] titulos = new String[]{"Ci", "Año", "Carrera", "Nota", "Escalafon"};
+        String[][] datos = new String[otorgamientos.size() + 2][titulos.length];
+        datos[0] = titulos;
+        datos[1] = new String[]{"2", "1", "3", "1", "1"};
+        int row = 2;
+        for (Otorgamiento otorgamiento : otorgamientos) {
+            
+            datos[row][0] = otorgamiento.getCi();
+            datos[row][1] = otorgamiento.getYeargraduacion()+"";
+            datos[row][2] = otorgamiento.getCarrera();
+            datos[row][3] = otorgamiento.getNotaescalafon()+"";
+            datos[row][4] = otorgamiento.getNoescalafon()+"";
+            row++;
+        }
+        return datos;
+    }
 }
+
