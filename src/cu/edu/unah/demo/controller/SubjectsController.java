@@ -43,6 +43,19 @@ public class SubjectsController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping(path = {"/findAll/{gradeid}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<Subjects>> findAll(@PathVariable Integer gradeid) {
+        try {
+            return new ResponseEntity<List<Subjects>>(subjectsservices.findAll(gradeid), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping(path = {"/find/{id}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Subjects> findById(@PathVariable Integer id) {

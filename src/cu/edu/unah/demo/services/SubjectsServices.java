@@ -6,6 +6,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,15 @@ public class SubjectsServices {
 
     public List<Subjects> findAll() {
         return subjectsrepository.findAll();
+    }
+    public List<Subjects> findAll(int grade) {
+        List<Subjects> lista=new  ArrayList();
+        for (Subjects subjects : findAll()) {
+            if (subjects.getGrade()==grade) {
+                lista.add(subjects);
+            }
+        }
+        return lista;
     }
     public int getIdCorrespondiente(){
         List<Subjects> asignaturas=findAll();
