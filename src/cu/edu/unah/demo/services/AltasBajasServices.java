@@ -31,7 +31,13 @@ public class AltasBajasServices {
         }
         return lista;
     }
-
+    
+    public AltasBajas findByIdIfExist(String id) {
+        if(altasbajasrepository.existsById(id)){
+            return altasbajasrepository.findById(id).get();
+        }
+        return null;
+    }
     public AltasBajas findById(String id) {
         return altasbajasrepository.findById(id).get();
     }

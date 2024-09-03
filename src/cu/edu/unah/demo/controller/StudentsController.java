@@ -133,7 +133,9 @@ public class StudentsController {
             String ci = body.getCi();
             String carrera = body.getCarrera();
             String Nodematricula = body.getNodematricula();
-            studentsservices.subirDeGrado(ci, carrera, Nodematricula);
+            Double notaescalafon=body.getNotaescalafon();
+            Integer noescalafon=body.getNoescalafon();
+            studentsservices.subirDeGrado(ci, carrera, Nodematricula,notaescalafon,noescalafon);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -149,7 +151,7 @@ public class StudentsController {
     @GetMapping(path = {"/subirdegrado/{ciestudiante}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity subirdegrado(@PathVariable String ciestudiante) {
         try {
-            studentsservices.subirDeGrado(ciestudiante, null, null);
+            studentsservices.subirDeGrado(ciestudiante, null, null,null,null);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);

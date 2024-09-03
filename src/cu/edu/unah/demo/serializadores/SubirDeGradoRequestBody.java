@@ -15,16 +15,41 @@ public class SubirDeGradoRequestBody implements Serializable {
     private String carrera;
     @Basic(optional = false)
     private String Nodematricula;
+    
+    private Double notaescalafon;
+    
+    private Integer noescalafon;
 
-    public SubirDeGradoRequestBody(String ci, String carrera, String Nodematricula) {
+    public SubirDeGradoRequestBody(String ci, String carrera, String Nodematricula, Double notaescalafon, Integer noescalafon) {
         this.ci = ci;
         this.carrera = carrera;
         this.Nodematricula = Nodematricula;
+        this.notaescalafon = notaescalafon;
+        this.noescalafon = noescalafon;
     }
+
+    
 
     public SubirDeGradoRequestBody() {
     }
 
+    public Double getNotaescalafon() {
+        return notaescalafon;
+    }
+
+    public void setNotaescalafon(Double notaescalafon) {
+        this.notaescalafon = notaescalafon;
+    }
+
+    public Integer getNoescalafon() {
+        return noescalafon;
+    }
+
+    public void setNoescalafon(Integer noescalafon) {
+        this.noescalafon = noescalafon;
+    }
+    
+    
     public String getCi() {
         return ci;
     }

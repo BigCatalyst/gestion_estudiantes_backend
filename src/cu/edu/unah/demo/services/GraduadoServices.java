@@ -17,6 +17,17 @@ public class GraduadoServices {
 	public Graduado findById(Integer id) {
 		return graduadorepository.findById(id).get();
 	}
+        public boolean exist(Integer id) {
+            return graduadorepository.existsById(id);
+        }
+        public Graduado findByCi(String ci) {
+            for (Graduado graduado : findAll()) {
+                if(graduado.getCi().equals(ci)){
+                    return graduado;
+                }
+            }
+            return null;
+        }
 	public Graduado save(Graduado graduado) {
 		if (graduado.getId()!=null && graduadorepository.existsById(graduado.getId())) {
 			throw new EntityExistsException("There is already existing entity with such ID in the database.");

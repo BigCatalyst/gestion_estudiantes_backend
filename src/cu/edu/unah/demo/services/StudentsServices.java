@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StudentsServices {
-    
+
     @Autowired
     private CareersServices careersServices;
-    
+
     @Autowired
     private StudentCareerServices studentCareerServices;
 
@@ -86,22 +86,24 @@ public class StudentsServices {
         studentsrepository.deleteById(id);
     }
 
-    public void subirDeGrado(String ci, String carrera, String Nodematricula) {
+    public void subirDeGrado(String ci, String carrera, String Nodematricula, Double notaescalafon, Integer noescalafon) {
         if (!studentsrepository.existsById(ci)) {
             throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
         Students estudiante = findById(ci);
         if (estudiante.getGrade() >= 9) {
-            List<Notes> notas = notesservices.findAll(ci);
-            for (Notes nota : notas) {
+            List<Notes> notas9 = notesservices.findByGrade(9, ci);
+            for (Notes nota : notas9) {
                 if (nota.getFinalExam() == null
                         || nota.getFinalNote() == null
                         || nota.getTcp1() == null) {
                     throw new BadRequestException("No puede tener notas vacias");
                 }
             }
-
-            Graduado graduado = new Graduado();
+            Graduado graduado = graduadoservices.findByCi(ci);
+            if (graduado == null) {
+                graduado = new Graduado();
+            }
             graduado.setApellidos(estudiante.getLastName());
             graduado.setCarrera(carrera);
             graduado.setCi(estudiante.getCi());
@@ -110,9 +112,16 @@ public class StudentsServices {
             graduado.setNodematricula(carrera);
             graduado.setNombre(estudiante.getName());
             graduado.setSexo(estudiante.getSex());
-            graduado = graduadoservices.save(graduado);
+            graduado.setNotaescalafon(notaescalafon);
+            graduado.setNoescalafon(noescalafon);
 
-            for (Notes nota : notas) {
+            if (graduado.getId() == null) {
+                graduado = graduadoservices.save(graduado);
+            } else {
+                graduadoservices.update(graduado);
+            }
+
+            for (Notes nota : notas9) {
                 Notagraduado notagraduado = new Notagraduado();
                 notagraduado.setAsnota((double) nota.getAcs());
                 notagraduado.setNotafinal((double) nota.getFinalNote());
@@ -126,32 +135,60 @@ public class StudentsServices {
                 notagraduado = notagraduadoservices.save(notagraduado);
                 notesservices.delete(nota);
             }
-            for (AltasBajas altasBajas : altasbajasservices.findAll()) {
+            List<Notes> notas8y7 = notesservices.findAll(ci);
+            for (Notes nota : notas8y7) {
+                notesservices.delete(nota);
+            }
+            AltasBajas altasBajas = altasbajasservices.findByIdIfExist(ci);
+            if (altasBajas != null) {
                 altasbajasservices.delete(altasBajas.getCi());
             }
+            studentCareerServices.delete(ci);
+            Otorgamiento otorgamiento = otorgamientoService.findById(ci);
+            if (otorgamiento != null) {
+                otorgamientoService.delete(otorgamiento.getId());
+            }
+
             delete(ci);
         } else {
             estudiante.setGrade(estudiante.getGrade() + 1);
             update(estudiante);
         }
     }
-    
-    
-    public void realizarOtorgamiento(){
-        List<Careers> carrerasDisponibles=careersServices.findAll();
-        List<UbicacionEscalafonResponse> ubicacionEscalafon=obtenerEscalafon();
-        List<BoletaEstudiante> boletasEstudiantes=new ArrayList<>();
-        
-        List<HashMap<String,Object>> rawBoletasFormato=studentCareerServices.findAllBoletasFormato();
+
+    public void subirDeGradoAll() {
+        for (Otorgamiento otorgamiento : otorgamientoService.findAll()) {
+            String ci = otorgamiento.getCi();
+            String carrera = otorgamiento.getCarrera();
+            String Nodematricula = otorgamiento.getNoescalafon() + "";
+            Double notaescalafon = otorgamiento.getNotaescalafon();
+            Integer noescalafon = otorgamiento.getNoescalafon();
+            subirDeGrado(ci, carrera, Nodematricula, notaescalafon, noescalafon);
+            otorgamientoService.delete(otorgamiento.getId());
+        }
+        for (Students students : findAll(8)) {
+            subirDeGrado(students.getCi(), null, null, null, null);
+        }
+        for (Students students : findAll(7)) {
+            subirDeGrado(students.getCi(), null, null, null, null);
+        }
+    }
+
+    public void realizarOtorgamiento() {
+        List<Careers> carrerasDisponibles = careersServices.findAll();
+        List<UbicacionEscalafonResponse> ubicacionEscalafon = obtenerEscalafon();
+        List<BoletaEstudiante> boletasEstudiantes = new ArrayList<>();
+
+        List<HashMap<String, Object>> rawBoletasFormato = studentCareerServices.findAllBoletasFormato();
         for (HashMap<String, Object> hashMap : rawBoletasFormato) {
-            BoletaEstudiante boletaEstudiante=new BoletaEstudiante();
+            BoletaEstudiante boletaEstudiante = new BoletaEstudiante();
             boletaEstudiante.setCi(hashMap.get("ci").toString());
-            boletaEstudiante.setNombre_carreras((List<String>)hashMap.get("carreras"));
+            boletaEstudiante.setNombre_carreras((List<String>) hashMap.get("carreras"));
             boletasEstudiantes.add(boletaEstudiante);
         }
         otorgarCarreras(carrerasDisponibles, boletasEstudiantes, ubicacionEscalafon);
     }
-    
+
     public List<UbicacionEscalafonResponse> obtenerEscalafon() {
         List<Students> estudiantes = findAll(9);
         for (Students estudiante : estudiantes) {
@@ -235,34 +272,33 @@ public class StudentsServices {
         }
         return estudiantesOrdenados;
     }
-    
-    
-    public void otorgarCarreras(List<Careers> carrerasDisponibles, 
-                                                List<BoletaEstudiante> boletasEstudiantes, 
-                                                List<UbicacionEscalafonResponse> ubicacionEscalafon) {
+
+    public void otorgarCarreras(List<Careers> carrerasDisponibles,
+            List<BoletaEstudiante> boletasEstudiantes,
+            List<UbicacionEscalafonResponse> ubicacionEscalafon) {
         Date date = new Date();
-        
+
         // Mapa para llevar el control de las plazas disponibles por carrera
         Map<String, Integer> plazasDisponibles = carrerasDisponibles.stream()
-            .collect(Collectors.toMap(Careers::getName, Careers::getAmount));
+                .collect(Collectors.toMap(Careers::getName, Careers::getAmount));
 
         List<Otorgamiento> otorgamientos = new ArrayList<>();
-        
+
         // Asignar carreras, considerando la priorización de escalafón y deseos
         for (UbicacionEscalafonResponse ubicacion : ubicacionEscalafon) {
             String ciEstudiante = ubicacion.getEstudiante().getCi();
             BoletaEstudiante boleta = boletasEstudiantes.stream()
-                .filter(b -> b.getCi().equals(ciEstudiante))
-                .findFirst()
-                .orElse(null);
-            
+                    .filter(b -> b.getCi().equals(ciEstudiante))
+                    .findFirst()
+                    .orElse(null);
+
             if (boleta != null) {
                 // Buscar la carrera que puede ser asignada según los deseos y disponibilidad
                 for (String deseo : boleta.nombre_carreras) {
                     Integer plazas = plazasDisponibles.get(deseo);
                     if (plazas != null && plazas > 0) {
-                        Otorgamiento otorgamiento=otorgamientoService.findById(ciEstudiante);
-                        if(otorgamiento==null){
+                        Otorgamiento otorgamiento = otorgamientoService.findById(ciEstudiante);
+                        if (otorgamiento == null) {
                             otorgamiento = new Otorgamiento();
                             otorgamiento.setCi(ciEstudiante);
                             otorgamiento.setNoescalafon(ubicacion.getLugar());
@@ -271,11 +307,11 @@ public class StudentsServices {
                             otorgamiento.setNotaescalafon(ubicacion.getPromedio());
                             otorgamiento.setCarrera(deseo);
                             otorgamientoService.save(otorgamiento);
-                        }else {
+                        } else {
                             otorgamiento.setCarrera(deseo);
                             otorgamientoService.update(otorgamiento);
                         }
-                        
+
 //                        // Asignamos la carrera
 //                        otorgamientos.add(new Otorgamiento(ciEstudiante, deseo));
                         // Reducimos la cantidad de plazas disponibles
@@ -285,10 +321,9 @@ public class StudentsServices {
                 }
             }
         }
-        
-    
+
     }
-    
+
     public String[][] getDatosEscalafon(List<UbicacionEscalafonResponse> ubicaciones) {
         String[] titulos = new String[]{"Ci", "Nombre", "Apellido", "Promedio", "No."};
         String[][] datos = new String[ubicaciones.size() + 2][titulos.length];
@@ -307,9 +342,7 @@ public class StudentsServices {
         }
         return datos;
     }
-    
-    
-    
+
     public String[][] getDatosEstudiantes(int grade) {
         return getDatosEstudiantes(findAll(grade));
     }
