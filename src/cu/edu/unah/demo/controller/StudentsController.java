@@ -145,6 +145,22 @@ public class StudentsController {
         }
 
     }
+    
+    @GetMapping(path = {"/subirdegrado/{ciestudiante}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity subirdegrado(@PathVariable String ciestudiante) {
+        try {
+            studentsservices.subirDeGrado(ciestudiante, null, null);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } catch (EntityExistsException | BadRequestException | IdentifierGenerationException e) {
+            HashMap<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            System.out.println(e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
     @GetMapping(path = {"/escalafon"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<UbicacionEscalafonResponse>> escalafon() {
