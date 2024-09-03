@@ -37,6 +37,8 @@ public class NotesServices {
         }
         return notas;
     }
+    
+    
 
     public List<Notes> findAll(int subjectId) {
         ArrayList<Notes> notas = new ArrayList<>();
@@ -48,6 +50,25 @@ public class NotesServices {
         }
         return notas;
     }
+    
+    public List<Notes> findByGrade(String studentCi) {
+        ArrayList<Notes> notas = new ArrayList<>();
+         Students estudiante=studentsservices.findById(studentCi);
+        for (Notes note : findAll()) {
+            NotesPK notepk = note.getNotesPK();
+            if (notepk.getStudentCi().equals(studentCi)) {
+                
+                Subjects asignatura = subjectsservices.findById(notepk.getSubjectId());
+                if (asignatura.getGrade() == estudiante.getGrade()) {
+                    notas.add(note);
+                }
+                
+                
+            }
+        }
+        return notas;
+    }
+    
     public List<Notes> findByGradeYSubject(int subjectId) {
         Subjects asignatura=subjectsservices.findById(subjectId);
         ArrayList<Notes> notas = new ArrayList<>();
@@ -83,6 +104,7 @@ public class NotesServices {
 
     public List<Notes> findByGrade(int grade, String studentCi) {
         ArrayList<Notes> notas = new ArrayList<>();
+//        Students estudiante=studentsservices.findById(studentCi);
         for (Notes note : findAll()) {
             NotesPK notepk = note.getNotesPK();
             if (notepk.getStudentCi().equals(studentCi)) {

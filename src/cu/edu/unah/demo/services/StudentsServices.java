@@ -99,6 +99,9 @@ public class StudentsServices {
                         || nota.getTcp1() == null) {
                     throw new BadRequestException("No puede tener notas vacias");
                 }
+                if(nota.getFinalExam()<(30)){
+                    throw new BadRequestException("La nota final es menor a 30");
+                }
             }
             Graduado graduado = graduadoservices.findByCi(ci);
             if (graduado == null) {
@@ -163,7 +166,11 @@ public class StudentsServices {
             String Nodematricula = otorgamiento.getNoescalafon() + "";
             Double notaescalafon = otorgamiento.getNotaescalafon();
             Integer noescalafon = otorgamiento.getNoescalafon();
-            subirDeGrado(ci, carrera, Nodematricula, notaescalafon, noescalafon);
+            try{
+                subirDeGrado(ci, carrera, Nodematricula, notaescalafon, noescalafon);
+            }catch(BadRequestException ex){
+            }
+            
             //otorgamientoService.delete(otorgamiento.getId());
         }
         for (Students students : findAll(8)) {
@@ -190,22 +197,36 @@ public class StudentsServices {
     }
 
     public List<UbicacionEscalafonResponse> obtenerEscalafon() {
-        List<Students> estudiantes = findAll(9);
-        for (Students estudiante : estudiantes) {
-            List<Notes> list_notes = notesservices.findAll(estudiante.getCi());
+        List<Students> estudiantes_a_validar = findAll(9);
+        
+        List<Students> estudiantes=new ArrayList<>();
+        
+        for (Students estudiante : estudiantes_a_validar) {
+            boolean estudiante_aprobado=false;
+            List<Notes> list_notes = notesservices.findByGrade(estudiante.getCi());
             for (Notes nota : list_notes) {
                 if (nota.getFinalExam() == null
-                        || nota.getTcp1() == null) {
+                        || nota.getTcp1() == null
+                        ||nota.getAcs()==null) {
                     System.out.println(estudiante.getCi());
-                    throw new BadRequestException("No puede tener notas vacias");
+                    continue;
+                    //throw new BadRequestException("No puede tener notas vacias");
                 }
+                if(nota.getFinalExam()<30){
+                   continue;
+                }
+                estudiante_aprobado=true;
+                
+            }
+            if(estudiante_aprobado){
+                estudiantes.add(estudiante);
             }
         }
 
         HashMap<Students, Double> estudiantes_notas = new HashMap<>();
 
         for (Students estudiante : estudiantes) {
-            List<Notes> list_notes = notesservices.findAll(estudiante.getCi());
+            List<Notes> list_notes =  notesservices.findByGrade(estudiante.getCi());
             double suma_notas = 0;
             for (Notes note : list_notes) {
                 Subjects asignatura = subjectsservices.findById(note.getNotesPK().getSubjectId());
