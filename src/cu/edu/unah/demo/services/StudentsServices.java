@@ -164,7 +164,7 @@ public class StudentsServices {
             Double notaescalafon = otorgamiento.getNotaescalafon();
             Integer noescalafon = otorgamiento.getNoescalafon();
             subirDeGrado(ci, carrera, Nodematricula, notaescalafon, noescalafon);
-            otorgamientoService.delete(otorgamiento.getId());
+            //otorgamientoService.delete(otorgamiento.getId());
         }
         for (Students students : findAll(8)) {
             subirDeGrado(students.getCi(), null, null, null, null);
