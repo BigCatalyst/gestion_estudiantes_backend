@@ -5,6 +5,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import cu.edu.unah.demo.model.*;
 import cu.edu.unah.demo.repository.*;
+import cu.edu.unah.demo.utiles.Utiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
@@ -32,12 +33,18 @@ public class GraduadoServices {
 		if (graduado.getId()!=null && graduadorepository.existsById(graduado.getId())) {
 			throw new EntityExistsException("There is already existing entity with such ID in the database.");
 		}
+                graduado.setNodematricula(Utiles.getIntegerStr(graduado.getNodematricula(),20));
+                graduado.setCi(Utiles.ajustarString(graduado.getCi(), 20));
+                graduado.setSexo(Utiles.ajustarString(graduado.getSexo(), 10));
 		return graduadorepository.save(graduado);
 	}
 	public Graduado update(Graduado graduado) {
 		if (graduado.getId()!=null && !graduadorepository.existsById(graduado.getId())) {
 			throw new EntityNotFoundException("There is no entity with such ID in the database.");
 		}
+                graduado.setNodematricula(Utiles.getIntegerStr(graduado.getNodematricula(),20));
+                graduado.setCi(Utiles.ajustarString(graduado.getCi(), 20));
+                graduado.setSexo(Utiles.ajustarString(graduado.getSexo(), 10));
 		return graduadorepository.save(graduado);
 	}
 	public void delete(Integer id) {

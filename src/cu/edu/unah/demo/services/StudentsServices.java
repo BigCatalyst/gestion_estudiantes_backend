@@ -109,7 +109,7 @@ public class StudentsServices {
             graduado.setCi(estudiante.getCi());
             graduado.setDireccion(estudiante.getAddress());
             graduado.setFechagraduacion(new Date());
-            graduado.setNodematricula(carrera);
+            graduado.setNodematricula(noescalafon+"");
             graduado.setNombre(estudiante.getName());
             graduado.setSexo(estudiante.getSex());
             graduado.setNotaescalafon(notaescalafon);
