@@ -91,7 +91,12 @@ public class NotesServices {
             int subjectId = notepk.getSubjectId();
             Subjects asignatura = subjectsservices.findById(subjectId);
             if (asignatura.getGrade() == grade) {
-                notas.add(note);
+                Students students=studentsservices.findById(notepk.getStudentCi());
+                if(students.getGrade()==grade){
+                    notas.add(note);
+                }
+                
+                
             }
 
         }
