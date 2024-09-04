@@ -90,10 +90,10 @@ public class StudentsServices {
         if (!studentsrepository.existsById(ci)) {
             throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
-        
+
         Students estudiante = findById(ci);
         List<Notes> notas_comprobadas = notesservices.findByGrade(estudiante.getGrade(), ci);
-        if(notas_comprobadas.isEmpty()){
+        if (notas_comprobadas.isEmpty()) {
             throw new BadRequestException("Este estudiante no tiene notas");
         }
         for (Notes nota : notas_comprobadas) {
@@ -102,14 +102,13 @@ public class StudentsServices {
                     || nota.getTcp1() == null) {
                 throw new BadRequestException("No puede tener notas vacias");
             }
-            if(nota.getFinalExam()<(30)){
+            if (nota.getFinalExam() < (30)) {
                 throw new BadRequestException("La nota final es menor a 30");
             }
         }
-        
-        
+
         if (estudiante.getGrade() >= 9) {
-            
+
             Graduado graduado = graduadoservices.findByCi(ci);
             if (graduado == null) {
                 graduado = new Graduado();
@@ -119,7 +118,7 @@ public class StudentsServices {
             graduado.setCi(estudiante.getCi());
             graduado.setDireccion(estudiante.getAddress());
             graduado.setFechagraduacion(new Date());
-            graduado.setNodematricula(noescalafon+"");
+            graduado.setNodematricula(noescalafon + "");
             graduado.setNombre(estudiante.getName());
             graduado.setSexo(estudiante.getSex());
             graduado.setNotaescalafon(notaescalafon);
@@ -173,18 +172,24 @@ public class StudentsServices {
             String Nodematricula = otorgamiento.getNoescalafon() + "";
             Double notaescalafon = otorgamiento.getNotaescalafon();
             Integer noescalafon = otorgamiento.getNoescalafon();
-            try{
+            try {
                 subirDeGrado(ci, carrera, Nodematricula, notaescalafon, noescalafon);
-            }catch(BadRequestException ex){
+            } catch (BadRequestException ex) {
             }
-            
+
             //otorgamientoService.delete(otorgamiento.getId());
         }
         for (Students students : findAll(8)) {
-            subirDeGrado(students.getCi(), null, null, null, null);
+            try {
+                subirDeGrado(students.getCi(), null, null, null, null);
+            } catch (BadRequestException ex) {
+            }
         }
         for (Students students : findAll(7)) {
-            subirDeGrado(students.getCi(), null, null, null, null);
+            try {
+                subirDeGrado(students.getCi(), null, null, null, null);
+            } catch (BadRequestException ex) {
+            }
         }
     }
 
@@ -205,27 +210,27 @@ public class StudentsServices {
 
     public List<UbicacionEscalafonResponse> obtenerEscalafon() {
         List<Students> estudiantes_a_validar = findAll(9);
-        
-        List<Students> estudiantes=new ArrayList<>();
-        
+
+        List<Students> estudiantes = new ArrayList<>();
+
         for (Students estudiante : estudiantes_a_validar) {
-            boolean estudiante_aprobado=false;
+            boolean estudiante_aprobado = false;
             List<Notes> list_notes = notesservices.findByGrade(estudiante.getCi());
             for (Notes nota : list_notes) {
                 if (nota.getFinalExam() == null
                         || nota.getTcp1() == null
-                        ||nota.getAcs()==null) {
+                        || nota.getAcs() == null) {
                     System.out.println(estudiante.getCi());
                     continue;
                     //throw new BadRequestException("No puede tener notas vacias");
                 }
-                if(nota.getFinalExam()<30){
-                   continue;
+                if (nota.getFinalExam() < 30) {
+                    continue;
                 }
-                estudiante_aprobado=true;
-                
+                estudiante_aprobado = true;
+
             }
-            if(estudiante_aprobado){
+            if (estudiante_aprobado) {
                 estudiantes.add(estudiante);
             }
         }
@@ -233,7 +238,7 @@ public class StudentsServices {
         HashMap<Students, Double> estudiantes_notas = new HashMap<>();
 
         for (Students estudiante : estudiantes) {
-            List<Notes> list_notes =  notesservices.findByGrade(estudiante.getCi());
+            List<Notes> list_notes = notesservices.findByGrade(estudiante.getCi());
             double suma_notas = 0;
             for (Notes note : list_notes) {
                 Subjects asignatura = subjectsservices.findById(note.getNotesPK().getSubjectId());
