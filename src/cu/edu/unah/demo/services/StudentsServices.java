@@ -90,19 +90,26 @@ public class StudentsServices {
         if (!studentsrepository.existsById(ci)) {
             throw new EntityNotFoundException("There is no entity with such ID in the database.");
         }
+        
         Students estudiante = findById(ci);
-        if (estudiante.getGrade() >= 9) {
-            List<Notes> notas9 = notesservices.findByGrade(9, ci);
-            for (Notes nota : notas9) {
-                if (nota.getFinalExam() == null
-                        || nota.getFinalNote() == null
-                        || nota.getTcp1() == null) {
-                    throw new BadRequestException("No puede tener notas vacias");
-                }
-                if(nota.getFinalExam()<(30)){
-                    throw new BadRequestException("La nota final es menor a 30");
-                }
+        List<Notes> notas_comprobadas = notesservices.findByGrade(estudiante.getGrade(), ci);
+        if(notas_comprobadas.isEmpty()){
+            throw new BadRequestException("Este estudiante no tiene notas");
+        }
+        for (Notes nota : notas_comprobadas) {
+            if (nota.getFinalExam() == null
+                    || nota.getFinalNote() == null
+                    || nota.getTcp1() == null) {
+                throw new BadRequestException("No puede tener notas vacias");
             }
+            if(nota.getFinalExam()<(30)){
+                throw new BadRequestException("La nota final es menor a 30");
+            }
+        }
+        
+        
+        if (estudiante.getGrade() >= 9) {
+            
             Graduado graduado = graduadoservices.findByCi(ci);
             if (graduado == null) {
                 graduado = new Graduado();
@@ -124,7 +131,7 @@ public class StudentsServices {
                 graduadoservices.update(graduado);
             }
 
-            for (Notes nota : notas9) {
+            for (Notes nota : notas_comprobadas) {
                 Notagraduado notagraduado = new Notagraduado();
                 notagraduado.setAsnota((double) nota.getAcs());
                 notagraduado.setNotafinal((double) nota.getFinalNote());
